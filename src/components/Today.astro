@@ -1,0 +1,18 @@
+---
+import today from "../../public/today.svg";
+
+export interface Props {
+  href: string;
+}
+
+const { href } = Astro.props;
+---
+
+<div class="px-4 pt-4 rounded-2xl bg-grayish-500">
+  <a href={href}>
+    <span class="font-bold">Today</span>
+    <span>
+      <img src={today} />
+    </span>
+  </a>
+</div>

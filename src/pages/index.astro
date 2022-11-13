@@ -1,0 +1,29 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ButtonTimer from "../components/ButtonTimer";
+import Statistic from "../components/Statistic.astro";
+import Today from "../components/Today.astro";
+
+import avatar from "../../public/avatar.svg";
+import celendar from "../../public/celendar.svg";
+import swipeweek from "../../public/swipeweek.svg";
+---
+
+<Layout title="Bored Calendar">
+  <div class="flex flex-col gap-2 p-4 bg-white h-screen max-w-sm">
+    <div class="grid grid-cols-3">
+      <div class="flex items-center col-start-1 col-end-3">
+        <img src={avatar} />Hello,<span class="font-bold">Aida</span>
+      </div>
+      <div class="flex items-center justify-end col-start-3 col-end-4">
+        <img src={celendar} />
+      </div>
+    </div>
+    <img src={swipeweek} />
+    <Statistic href="" />
+    <Today href="" />
+    <div class="flex items-center justify-center">
+      <ButtonTimer client:only="react" />
+    </div>
+  </div>
+</Layout>
