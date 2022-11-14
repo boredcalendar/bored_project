@@ -15,9 +15,8 @@ const ButtonTimer: React.FC<{}> = () => {
     <>
       <CircularSlider
         width={165}
-        direction={-1}
         min={0}
-        max={60}
+        max={15}
         valueFontSize="2rem"
         label="You Bored?"
         labelColor="#FFFFFF"
@@ -29,7 +28,7 @@ const ButtonTimer: React.FC<{}> = () => {
         progressSize={16}
         trackSize={16}
         trackColor="#F9FAFB"
-        dataIndex={1}
+        dataIndex={0}
         onChange={(value: any) => {
           setMinuts(value);
         }}
