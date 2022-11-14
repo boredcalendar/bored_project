@@ -45,9 +45,11 @@ const ButtonTimer: React.FC<{}> = () => {
           className="flex flex-col justify-center items-center h-28 w-28"
           onMouseDown={() => setClick(false)}
           onMouseUp={() => setClick(true)}
-          onClick={() => {
+          onClick={(e) => {
             upDateDataBase.time = upDateDataBase.time + minuts;
             localStorage.setItem("DataBase", JSON.stringify(upDateDataBase));
+            e.stopPropagation();
+            location.reload();
           }}
         >
           <div className="text-white">{minuts}</div>
