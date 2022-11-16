@@ -7,30 +7,27 @@ const Today = () => {
       <a href="">
         <div className="font-bold">Today</div>
         Time is {timeIsToday.time} minuts
-        <div className="min-w-0">
-          <Bullet
-            data={[
-              {
-                id: "",
-                ranges: [0, 10, 20, 60],
-                measures: [timeIsToday.time],
-                markers: [20],
-              },
-            ]}
-            minValue="auto"
-            maxValue="auto"
-            rangeBorderWidth={10}
-            measureBorderColor={{ from: "color", modifiers: [] }}
-            measureBorderWidth={10}
-            markerSize={1}
-            rangeColors="blues"
-            measureColors="seq:blues"
-            markerColors="seq:yellow_orange_brown"
-            height={50}
-            width={300}
-          />
-        </div>
       </a>
+      <Bullet
+        data={[
+          {
+            id: "",
+            ranges: [1, 5, 20, 40, 60],
+            measures: [timeIsToday.time],
+            markers: [5, 20],
+          },
+        ]}
+        margin={{ top: 0, right: 10, bottom: 25, left: 10 }}
+        spacing={0}
+        titleAlign="start"
+        rangeColors="blues"
+        measureColors="seq:greys"
+        measureBorderColor="#bbb9b9"
+        measureBorderWidth={1}
+        markerColors="seq:yellow_orange_brown"
+        height={55}
+        width={300}
+      />
     </div>
   );
 };
