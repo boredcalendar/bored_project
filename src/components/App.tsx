@@ -2,11 +2,25 @@ import React from "react";
 import Calendar from "react-calendar";
 import CircularSlider from "@fseehawer/react-circular-slider";
 import { Bullet } from "@nivo/bullet";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 
 import avatar from "/avatar.svg";
 import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
+
+const queryClient = new QueryClient();
+
+type DayStats = {
+  date: string;
+  time: number;
+};
+
+const db = window.openDatabase("MyBD", "1.0", "Test DB", 2 * 1024 * 1024);
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
@@ -14,42 +28,40 @@ const App: React.FC<{}> = () => {
     value.getMonth() + 1
   }${value.getFullYear()}`;
 
-  const [allTablet, setAllTablet] = React.useState("");
   const [chooseDay, setChooseDay] = React.useState("");
   const chooseDayString = new String(chooseDay);
 
-  const db = openDatabase("MyBD", "1.0", "Test DB", 2 * 1024 * 1024);
-  React.useEffect(() => {
-    db.transaction((tx: any) => {
-      tx.executeSql("CREATE TABLE IF NOT EXISTS LOGS ( date, time)");
-      tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [date, 0]);
-      tx.executeSql(
-        "SELECT date, SUM(time) as time FROM LOGS WHERE date=? GROUP BY date",
-        [date],
-        (tx: any, result: any) => {
-          const res = JSON.stringify(result.rows).replace(
-            /[^a-zа-яё0-9\s]/gi,
-            ""
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["stats"],
+    queryFn: () =>
+      new Promise<DayStats[]>((resolve) => {
+        db.transaction((tx) => {
+          tx.executeSql("CREATE TABLE IF NOT EXISTS LOGS ( date, time)");
+          tx.executeSql(
+            "SELECT date, SUM(time) as time FROM LOGS WHERE date=? GROUP BY date",
+            [date],
+            (tx, result) => {
+              const res = JSON.stringify(result.rows).replace(
+                /[^a-zа-яё0-9\s]/gi,
+                ""
+              );
+              setChooseDay(res);
+            }
           );
-          setChooseDay(res);
-        }
-      );
-      tx.executeSql(
-        "SELECT date, SUM(time) as time FROM LOGS GROUP BY date ORDER BY date DESC LIMIT 7", // - отредактировать запрос добавить выборку от сегодня и на 7 дней назад
-        [],
-        (tx: any, result: any) => {
-          const res = JSON.stringify(result.rows).replace(
-            /[^a-zа-яё0-9:,]/gi,
-            ""
-          );
-          setAllTablet(res);
-        }
-      );
-      // tx.executeSql("DROP TABLE LOGS"); // - command for drop table
-    });
-  }, []);
 
-  const ButtonTimer: React.FC<{}> = () => {
+          tx.executeSql(
+            "SELECT date, SUM(time) as time FROM LOGS GROUP BY date ORDER BY date DESC LIMIT 7", // - отредактировать запрос добавить выборку от сегодня и на 7 дней назад
+            [],
+            (tx, result) => {
+              resolve([...(result.rows as unknown as DayStats[])]);
+            }
+          );
+          // tx.executeSql("DROP TABLE LOGS"); // - command for drop table
+        });
+      }),
+  });
+
+  const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
     const [minuts, setMinuts] = React.useState(0);
     const [click, setClick] = React.useState(true);
 
@@ -95,7 +107,7 @@ const App: React.FC<{}> = () => {
               });
 
               e.stopPropagation();
-              location.reload(); // - перезагрузка мешает многоразовому добавлению данных
+              onClick();
             }}
           >
             <div className="text-white">{minuts}</div>
@@ -137,88 +149,16 @@ const App: React.FC<{}> = () => {
     );
   };
 
-  const Statistic = () => {
-    const isStringAllTablet = new String(allTablet);
-
-    const statisticsOfLastSevenDays = [
-      isStringAllTablet
-        .replace(/[0-9]:date:/g, "")
-        .replace(/time:/g, "")
-        .split(","),
-    ];
-
-    const [day7, day6, day5, day4, day3, day2, day1] = [
-      statisticsOfLastSevenDays[0][0],
-      statisticsOfLastSevenDays[0][2],
-      statisticsOfLastSevenDays[0][4],
-      statisticsOfLastSevenDays[0][6],
-      statisticsOfLastSevenDays[0][8],
-      statisticsOfLastSevenDays[0][10],
-      statisticsOfLastSevenDays[0][12],
-    ];
-    const [
-      timeDay7,
-      timeDay6,
-      timeDay5,
-      timeDay4,
-      timeDay3,
-      timeDay2,
-      timeDay1,
-    ] = [
-      // statisticsOfLastSevenDays[0][1],
-      // statisticsOfLastSevenDays[0][3],
-      // statisticsOfLastSevenDays[0][5],
-      // statisticsOfLastSevenDays[0][7],
-      // statisticsOfLastSevenDays[0][9],
-      // statisticsOfLastSevenDays[0][11],
-      // statisticsOfLastSevenDays[0][13],
-      1, 2, 33, 4, 5, 6, 7,
-    ];
-
-    const data = [
-      {
-        id: `${day1}`,
+  const Statistic = ({ data: stats }: { data: DayStats[] }) => {
+    // я просто думаю что делать когда нет данных
+    const data = stats.map((item) => {
+      return {
+        id: item.date,
         ranges: [1, 5, 20, 40, 60],
-        measures: [+timeDay1 === undefined ? 0 : +timeDay1],
+        measures: [item.time || 0],
         markers: [5, 20],
-      },
-      {
-        id: `${day2}`,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [+timeDay2 === undefined ? 0 : +timeDay2],
-        markers: [5, 20],
-      },
-      {
-        id: `${day3}`,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [+timeDay3 === undefined ? 0 : +timeDay3],
-        markers: [5, 20],
-      },
-      {
-        id: `${day4}`,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [+timeDay4 === undefined ? 0 : +timeDay4],
-        markers: [5, 20],
-      },
-      {
-        id: `${day5}`,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [+timeDay5 === undefined ? 0 : +timeDay5],
-        markers: [5, 20],
-      },
-      {
-        id: `${day6}`,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [+timeDay6 === undefined ? 0 : +timeDay6],
-        markers: [5, 20],
-      },
-      {
-        id: `${day7}`,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [+timeDay7 === undefined ? 0 : +timeDay7],
-        markers: [5, 20],
-      },
-    ];
+      };
+    });
 
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
@@ -257,15 +197,21 @@ const App: React.FC<{}> = () => {
       </div>
       <Calendar onChange={onChange} value={value} />
       {/* <img src={swipeweek} /> - пример календаря, удалить после верстки */}
-      <Statistic />
+      {!isLoading && data && <Statistic data={data} />}
       <div>
         <Today />
       </div>
       <div className="flex items-center justify-center">
-        <ButtonTimer />
+        <ButtonTimer onClick={() => queryClient.invalidateQueries(["stats"])} />
       </div>
     </div>
   );
 };
 
-export default App;
+export default () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  );
+};
