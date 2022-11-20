@@ -20,7 +20,10 @@ type DayStats = {
   time: number;
 };
 
-const db = window.openDatabase("MyBD", "1.0", "Test DB", 2 * 1024 * 1024);
+const db =
+  typeof document === "object"
+    ? window.openDatabase("MyBD", "1.0", "Test DB", 2 * 1024 * 1024)
+    : undefined;
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
@@ -195,14 +198,18 @@ const App: React.FC<{}> = () => {
           <img src={celendar} />
         </div>
       </div>
-      <Calendar onChange={onChange} value={value} />
+      {!isLoading && <Calendar onChange={onChange} value={value} />}
       {/* <img src={swipeweek} /> - пример календаря, удалить после верстки */}
       {!isLoading && data && <Statistic data={data} />}
       <div>
         <Today />
       </div>
       <div className="flex items-center justify-center">
-        <ButtonTimer onClick={() => queryClient.invalidateQueries(["stats"])} />
+        {import.meta.env.DEV && (
+          <ButtonTimer
+            onClick={() => queryClient.invalidateQueries(["stats"])}
+          />
+        )}
       </div>
     </div>
   );
