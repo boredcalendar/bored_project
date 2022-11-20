@@ -20,6 +20,7 @@
     "@tanstack/react-query": "^4.16.1",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "@types/websql": "^0.0.27",
     "astro": "^1.6.7",
     "prop-types": "^15.8.1",
     "react": "^18.0.0",
