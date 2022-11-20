@@ -10,60 +10,48 @@ import "react-calendar/dist/Calendar.css";
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
-  const date = `${value.getDate()}${value.getMonth()}${value.getFullYear()}`;
+  const date = `${value.getDate()}${
+    value.getMonth() + 1
+  }${value.getFullYear()}`;
 
-  const [allTablet, setAllTablet] = React.useState<{}>();
-
-  const [chooseDay, setChooseDay] = React.useState<{}>();
+  const [allTablet, setAllTablet] = React.useState("");
+  const [chooseDay, setChooseDay] = React.useState("");
   const chooseDayString = new String(chooseDay);
-  // console.log(chooseDay);
-  // console.log(chooseDayString.indexOf("time"));
-  // console.log(chooseDayString.indexOf("37"));
-  // console.log(typeof +chooseDayString.substr(-2));
 
   const db = openDatabase("MyBD", "1.0", "Test DB", 2 * 1024 * 1024);
-  db.transaction((tx: any) => {
-    tx.executeSql("CREATE TABLE IF NOT EXISTS LOGS ( date, time)");
-    tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [date, 0]);
-    tx.executeSql(
-      "SELECT date, SUM(time) as time FROM LOGS WHERE date=? GROUP BY date",
-      [date],
-      (tx: any, result: any) => {
-        const res = JSON.stringify(result.rows).replace(
-          /[^a-zа-яё0-9\s]/gi,
-          ""
-        );
-        setChooseDay(res);
-      }
-    );
-    tx.executeSql(
-      "SELECT date, SUM(time) as time FROM LOGS GROUP BY date ORDER BY date DESC",
-      [],
-      (tx: any, result: any) => {
-        const res = JSON.stringify(result.rows)
-          .replace(
-            /[^a-zа-яё0-9:,]/gi,
-            // /[^a-zа-яё0-9\s]/gi,
+  React.useEffect(() => {
+    db.transaction((tx: any) => {
+      tx.executeSql("CREATE TABLE IF NOT EXISTS LOGS ( date, time)");
+      tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [date, 0]);
+      tx.executeSql(
+        "SELECT date, SUM(time) as time FROM LOGS WHERE date=? GROUP BY date",
+        [date],
+        (tx: any, result: any) => {
+          const res = JSON.stringify(result.rows).replace(
+            /[^a-zа-яё0-9\s]/gi,
             ""
-          )
-          .replace(/[dateim]/g, "");
-        setAllTablet(res);
-      }
-    );
-    // tx.executeSql("DROP TABLE LOGS"); // - дроп таблицы
-  });
+          );
+          setChooseDay(res);
+        }
+      );
+      tx.executeSql(
+        "SELECT date, SUM(time) as time FROM LOGS GROUP BY date ORDER BY date DESC LIMIT 7", // - отредактировать запрос добавить выборку от сегодня и на 7 дней назад
+        [],
+        (tx: any, result: any) => {
+          const res = JSON.stringify(result.rows).replace(
+            /[^a-zа-яё0-9:,]/gi,
+            ""
+          );
+          setAllTablet(res);
+        }
+      );
+      // tx.executeSql("DROP TABLE LOGS"); // - command for drop table
+    });
+  }, []);
 
   const ButtonTimer: React.FC<{}> = () => {
     const [minuts, setMinuts] = React.useState(0);
     const [click, setClick] = React.useState(true);
-
-    // - localStorage не используем, оставить удалить в конце
-    // ------------
-    // if (localStorage.length === 0 || localStorage.getItem(`${date}`) === null)
-    //   localStorage.setItem(`${date}`, JSON.stringify({ time: 0 }));
-    // const raw = localStorage.getItem(`${date}`);
-    // const upDateDataBase = JSON.parse(raw!);
-    // ------------
 
     return (
       <>
@@ -99,8 +87,6 @@ const App: React.FC<{}> = () => {
             onMouseDown={() => setClick(false)}
             onMouseUp={() => setClick(true)}
             onClick={(e) => {
-              // upDateDataBase.time = upDateDataBase.time + minuts; // - localStorage не используем, оставить удалить в конце
-              // localStorage.setItem(`${date}`, JSON.stringify(upDateDataBase)); // - localStorage не используем, оставить удалить в конце
               db.transaction(function (tx: any) {
                 tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [
                   date,
@@ -152,26 +138,95 @@ const App: React.FC<{}> = () => {
   };
 
   const Statistic = () => {
-    const allStatistics = JSON.parse(localStorage.getItem(`${date}`) || "{}"); // перевести данные из строки и разбить по датам и времени
+    const isStringAllTablet = new String(allTablet);
 
-    // const allStatistics1 = new Array(allTablet);
-    console.log(allTablet);
+    const statisticsOfLastSevenDays = [
+      isStringAllTablet
+        .replace(/[0-9]:date:/g, "")
+        .replace(/time:/g, "")
+        .split(","),
+    ];
+
+    const [day7, day6, day5, day4, day3, day2, day1] = [
+      statisticsOfLastSevenDays[0][0],
+      statisticsOfLastSevenDays[0][2],
+      statisticsOfLastSevenDays[0][4],
+      statisticsOfLastSevenDays[0][6],
+      statisticsOfLastSevenDays[0][8],
+      statisticsOfLastSevenDays[0][10],
+      statisticsOfLastSevenDays[0][12],
+    ];
+    const [
+      timeDay7,
+      timeDay6,
+      timeDay5,
+      timeDay4,
+      timeDay3,
+      timeDay2,
+      timeDay1,
+    ] = [
+      // statisticsOfLastSevenDays[0][1],
+      // statisticsOfLastSevenDays[0][3],
+      // statisticsOfLastSevenDays[0][5],
+      // statisticsOfLastSevenDays[0][7],
+      // statisticsOfLastSevenDays[0][9],
+      // statisticsOfLastSevenDays[0][11],
+      // statisticsOfLastSevenDays[0][13],
+      1, 2, 33, 4, 5, 6, 7,
+    ];
+
+    const data = [
+      {
+        id: `${day1}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [+timeDay1 === undefined ? 0 : +timeDay1],
+        markers: [5, 20],
+      },
+      {
+        id: `${day2}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [+timeDay2 === undefined ? 0 : +timeDay2],
+        markers: [5, 20],
+      },
+      {
+        id: `${day3}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [+timeDay3 === undefined ? 0 : +timeDay3],
+        markers: [5, 20],
+      },
+      {
+        id: `${day4}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [+timeDay4 === undefined ? 0 : +timeDay4],
+        markers: [5, 20],
+      },
+      {
+        id: `${day5}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [+timeDay5 === undefined ? 0 : +timeDay5],
+        markers: [5, 20],
+      },
+      {
+        id: `${day6}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [+timeDay6 === undefined ? 0 : +timeDay6],
+        markers: [5, 20],
+      },
+      {
+        id: `${day7}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [+timeDay7 === undefined ? 0 : +timeDay7],
+        markers: [5, 20],
+      },
+    ];
 
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Statistic</div>
-        Time is {allStatistics.time} minuts
         <Bullet
-          data={[
-            {
-              id: `${date}`,
-              ranges: [1, 5, 20, 40, 60],
-              measures: [allStatistics.time],
-              markers: [5, 20],
-            },
-          ]}
+          data={data}
           margin={{ top: 20, right: 25, bottom: 10, left: 0 }}
-          spacing={0}
+          spacing={30}
           titleAlign="end"
           titleOffsetX={0}
           titleOffsetY={-15}
@@ -183,7 +238,7 @@ const App: React.FC<{}> = () => {
           measureBorderWidth={1}
           markerColors="seq:yellow_orange_brown"
           height={300}
-          width={55}
+          width={300}
         />
       </div>
     );
