@@ -17,6 +17,7 @@
     "@fseehawer/react-circular-slider": "^2.5.16",
     "@nivo/bullet": "^0.80.0",
     "@nivo/core": "^0.80.0",
+    "@tanstack/react-query": "^4.16.1",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "astro": "^1.6.7",
