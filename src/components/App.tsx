@@ -13,6 +13,8 @@ import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
 
+let openRequest = indexedDB.open("store", 1);
+
 const queryClient = new QueryClient();
 
 type DayStats = {
@@ -33,6 +35,21 @@ const App: React.FC<{}> = () => {
 
   const [chooseDay, setChooseDay] = React.useState("");
   const chooseDayString = new String(chooseDay);
+
+  // openRequest.onupgradeneeded = function () {
+  //   // срабатывает, если на клиенте нет базы данных
+  //   // ...выполнить инициализацию...
+  // };
+
+  // openRequest.onerror = function () {
+  //   console.error("Error", openRequest.error);
+  // };
+
+  // openRequest.onsuccess = function () {
+  //   const db = openRequest.result;
+  //   db.createObjectStore("data", { keyPath: "date" });
+  //   // продолжить работу с базой данных, используя объект db
+  // };
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["stats"],
