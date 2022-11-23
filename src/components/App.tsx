@@ -7,11 +7,21 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import localforage from "localforage";
 
 import avatar from "/avatar.svg";
 import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
+
+(async () => {
+  await localforage.setItem("test_items", [
+    { date: new Date(), amount: 1 },
+    { date: new Date().getTime(), amount: 2 },
+  ]);
+  console.log(await localforage.getItem("test_items"));
+})();
+// let openRequest = indexedDB.open("store", 1);
 
 const queryClient = new QueryClient();
 
@@ -33,6 +43,21 @@ const App: React.FC<{}> = () => {
 
   const [chooseDay, setChooseDay] = React.useState("");
   const chooseDayString = new String(chooseDay);
+
+  // openRequest.onupgradeneeded = function () {
+  //   // срабатывает, если на клиенте нет базы данных
+  //   // ...выполнить инициализацию...
+  // };
+
+  // openRequest.onerror = function () {
+  //   console.error("Error", openRequest.error);
+  // };
+
+  // openRequest.onsuccess = function () {
+  //   const db = openRequest.result;
+  //   db.createObjectStore("data", { keyPath: "date" });
+  //   // продолжить работу с базой данных, используя объект db
+  // };
 
   const { isLoading, error, data } = useQuery({
     queryKey: ["stats"],
