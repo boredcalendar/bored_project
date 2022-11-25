@@ -7,80 +7,46 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
+import localforage from "localforage";
 
 import avatar from "/avatar.svg";
 import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
 
-let openRequest = indexedDB.open("store", 1);
+type MyType = [id: number, date: Date, time: number];
 
 const queryClient = new QueryClient();
 
-type DayStats = {
-  date: string;
-  time: number;
-};
-
-const db =
-  typeof document === "object"
-    ? window.openDatabase("MyBD", "1.0", "Test DB", 2 * 1024 * 1024)
-    : undefined;
-
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
-  const date = `${value.getDate()}${
-    value.getMonth() + 1
-  }${value.getFullYear()}`;
+  // const date = `${value.getDate()}${
+  //   value.getMonth() + 1
+  // }${value.getFullYear()}`;
 
   const [chooseDay, setChooseDay] = React.useState("");
   const chooseDayString = new String(chooseDay);
 
-  // openRequest.onupgradeneeded = function () {
-  //   // срабатывает, если на клиенте нет базы данных
-  //   // ...выполнить инициализацию...
-  // };
-
-  // openRequest.onerror = function () {
-  //   console.error("Error", openRequest.error);
-  // };
-
-  // openRequest.onsuccess = function () {
-  //   const db = openRequest.result;
-  //   db.createObjectStore("data", { keyPath: "date" });
-  //   // продолжить работу с базой данных, используя объект db
-  // };
-
   const { isLoading, error, data } = useQuery({
-    queryKey: ["stats"],
-    queryFn: () =>
-      new Promise<DayStats[]>((resolve) => {
-        db.transaction((tx) => {
-          tx.executeSql("CREATE TABLE IF NOT EXISTS LOGS ( date, time)");
-          tx.executeSql(
-            "SELECT date, SUM(time) as time FROM LOGS WHERE date=? GROUP BY date",
-            [date],
-            (tx, result) => {
-              const res = JSON.stringify(result.rows).replace(
-                /[^a-zа-яё0-9\s]/gi,
-                ""
-              );
-              setChooseDay(res);
-            }
-          );
-
-          tx.executeSql(
-            "SELECT date, SUM(time) as time FROM LOGS GROUP BY date ORDER BY date DESC LIMIT 7", // - отредактировать запрос добавить выборку от сегодня и на 7 дней назад
-            [],
-            (tx, result) => {
-              resolve([...(result.rows as unknown as DayStats[])]);
-            }
-          );
-          // tx.executeSql("DROP TABLE LOGS"); // - command for drop table
-        });
-      }),
+    queryKey: [`${value.setHours(0, 0, 0, 0)}`],
+    queryFn: async () => {
+      await localforage.setItem(`${value.setHours(0, 0, 0, 0)}`, [
+        { date: value },
+        { time: 42 },
+      ]);
+      const localData = await localforage.getItem(
+        `${value.setHours(0, 0, 0, 0)}`
+      );
+      // console.log(localData);
+      return localData as MyType[];
+    },
   });
 
+  console.log(
+    data?.map((val) => {
+      console.log(JSON.stringify(val).replace(/[^a-zа-яё0-9\s]/gi, ""));
+    })
+  );
   const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
     const [minuts, setMinuts] = React.useState(0);
     const [click, setClick] = React.useState(true);
@@ -119,12 +85,12 @@ const App: React.FC<{}> = () => {
             onMouseDown={() => setClick(false)}
             onMouseUp={() => setClick(true)}
             onClick={(e) => {
-              db.transaction(function (tx: any) {
-                tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [
-                  date,
-                  minuts,
-                ]);
-              });
+              // db.transaction(function (tx: any) {
+              //   tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [
+              //     date,
+              //     minuts,
+              //   ]);
+              // });
 
               e.stopPropagation();
               onClick();
@@ -145,6 +111,11 @@ const App: React.FC<{}> = () => {
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Today</div>
         Time is {timeIsToday} minuts
+        <div>
+          {data?.map((x) =>
+            JSON.stringify(x).replace(/[^a-zа-яё0-9\s]/gi, " ")
+          )}
+        </div>
         <Bullet
           data={[
             {
@@ -169,16 +140,16 @@ const App: React.FC<{}> = () => {
     );
   };
 
-  const Statistic = ({ data: stats }: { data: DayStats[] }) => {
+  const Statistic = () => {
     // я просто думаю что делать когда нет данных
-    const data = stats.map((item) => {
-      return {
-        id: item.date,
+    const data = [
+      {
+        id: "item.date",
         ranges: [1, 5, 20, 40, 60],
-        measures: [item.time || 0],
+        measures: [43],
         markers: [5, 20],
-      };
-    });
+      },
+    ];
 
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
@@ -217,7 +188,7 @@ const App: React.FC<{}> = () => {
       </div>
       {!isLoading && <Calendar onChange={onChange} value={value} />}
       {/* <img src={swipeweek} /> - пример календаря, удалить после верстки */}
-      {!isLoading && data && <Statistic data={data} />}
+      {!isLoading && data && <Statistic />}
       <div>
         <Today />
       </div>
