@@ -7,22 +7,24 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-import localforage from "localforage";
+// import localforage from "localforage";
 
 import avatar from "/avatar.svg";
 import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
+import IndexedDb from "./IndexedDB";
 
-type MyType = [id: number, date: Date, time: number];
+// type MyType = [id: number, date: Date, time: number];
 
 const queryClient = new QueryClient();
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
-  // const date = `${value.getDate()}${
-  //   value.getMonth() + 1
-  // }${value.getFullYear()}`;
+  const [timeOfButtonTimer, setTimeOfButtonTimer] = React.useState(0);
+  const date = `${value.getDate()}${
+    value.getMonth() + 1
+  }${value.getFullYear()}`;
 
   const [chooseDay, setChooseDay] = React.useState("");
   const chooseDayString = new String(chooseDay);
@@ -30,23 +32,33 @@ const App: React.FC<{}> = () => {
   const { isLoading, error, data } = useQuery({
     queryKey: [`${value.setHours(0, 0, 0, 0)}`],
     queryFn: async () => {
-      await localforage.setItem(`${value.setHours(0, 0, 0, 0)}`, [
-        { date: value },
-        { time: 42 },
-      ]);
-      const localData = await localforage.getItem(
-        `${value.setHours(0, 0, 0, 0)}`
-      );
-      // console.log(localData);
-      return localData as MyType[];
+      const indexedDb = new IndexedDb("Calendar");
+      await indexedDb.createObjectStore(["Logs"]);
+      const upload = await indexedDb.getValue(
+        "Logs",
+        value.setHours(0, 0, 0, 0)
+      ); // для изъятия времени сейчас и последующего складывания его с новым числом
+      await indexedDb.putValue("Logs", {
+        id: value.setHours(0, 0, 0, 0),
+        date: date,
+        time: upload === undefined ? 0 : upload.time + timeOfButtonTimer, // Без проверки не создает самую первуюзапись
+      });
+      const localData = await indexedDb.getValue(
+        "Logs",
+        value.setHours(0, 0, 0, 0)
+      ); // надо изъять в график суток. нужно для отображения времени после изменений
+      console.log("upload", upload.time);
+      console.log("localData", localData.time);
+
+      const allDB = await indexedDb.getAllValue("Logs"); // надо взять 7 последних дат и вывести в статистику данные
+      console.log("alldb", allDB); // надо вывести в статистику
+
+      return [localData.time];
     },
   });
 
-  console.log(
-    data?.map((val) => {
-      console.log(JSON.stringify(val).replace(/[^a-zа-яё0-9\s]/gi, ""));
-    })
-  );
+  console.log(data);
+
   const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
     const [minuts, setMinuts] = React.useState(0);
     const [click, setClick] = React.useState(true);
@@ -85,13 +97,7 @@ const App: React.FC<{}> = () => {
             onMouseDown={() => setClick(false)}
             onMouseUp={() => setClick(true)}
             onClick={(e) => {
-              // db.transaction(function (tx: any) {
-              //   tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [
-              //     date,
-              //     minuts,
-              //   ]);
-              // });
-
+              setTimeOfButtonTimer(minuts);
               e.stopPropagation();
               onClick();
             }}
@@ -105,23 +111,17 @@ const App: React.FC<{}> = () => {
   };
 
   const Today = () => {
-    const timeIsToday =
-      +chooseDayString.slice(-2) || +chooseDayString.slice(-1) || 0; // без перезагрузки не дает обновленную страничку, без нуля выдает NaN
+    const timeIsToday = data || 0; // по нажатию кнопки не записывает значение. Записывает тольео если в консоли открыть массив и нажать на бегунок
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Today</div>
         Time is {timeIsToday} minuts
-        <div>
-          {data?.map((x) =>
-            JSON.stringify(x).replace(/[^a-zа-яё0-9\s]/gi, " ")
-          )}
-        </div>
         <Bullet
           data={[
             {
               id: "",
               ranges: [0, 60],
-              measures: [timeIsToday],
+              measures: [timeIsToday], // ошибка второй очереди
               markers: [5, 20],
             },
           ]}
@@ -141,7 +141,7 @@ const App: React.FC<{}> = () => {
   };
 
   const Statistic = () => {
-    // я просто думаю что делать когда нет данных
+    // сюда добавить allDB
     const data = [
       {
         id: "item.date",
@@ -195,7 +195,7 @@ const App: React.FC<{}> = () => {
       <div className="flex items-center justify-center">
         {import.meta.env.DEV && (
           <ButtonTimer
-            onClick={() => queryClient.invalidateQueries(["stats"])}
+            onClick={() => queryClient.invalidateQueries(["Logs"])}
           />
         )}
       </div>

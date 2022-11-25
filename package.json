@@ -22,6 +22,7 @@
     "@types/react-dom": "^18.0.6",
     "@types/websql": "^0.0.27",
     "astro": "^1.6.7",
+    "idb": "^7.1.1",
     "localforage": "^1.10.0",
     "prop-types": "^15.8.1",
     "react": "^18.0.0",
