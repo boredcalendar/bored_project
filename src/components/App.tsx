@@ -148,21 +148,16 @@ const App: React.FC<{}> = () => {
         return allDB;
       },
     });
-    // dataAll?.map((x) => console.log(x));
 
     errorAll && console.log(errorAll);
-    console.log("loadingAll", loadingAll);
     const statistics =
-      dataAll?.map((x: any) => [
-        {
-          id: `${x.date}`,
-          ranges: [1, 5, 20, 40, 60],
-          measures: [x.time],
-          markers: [5, 20],
-        },
-      ]) || [];
+      dataAll?.slice(0, 7).map((x: any) => ({
+        id: `${x.date}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [x.time],
+        markers: [5, 20],
+      })) || [];
 
-    console.log(statistics); // - не выводит графики Bullet пишет что нужен key. куда его вводить я не знаю
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Statistic</div>
