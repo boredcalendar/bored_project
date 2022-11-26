@@ -7,7 +7,6 @@ import {
   QueryClientProvider,
   useQuery,
 } from "@tanstack/react-query";
-// import localforage from "localforage";
 
 import avatar from "/avatar.svg";
 import celendar from "/celendar.svg";
@@ -36,18 +35,16 @@ const App: React.FC<{}> = () => {
       const upload = await indexedDb.getValue(
         "Logs",
         value.setHours(0, 0, 0, 0)
-      ); // для изъятия времени сейчас и последующего складывания его с новым числом
+      );
       await indexedDb.putValue("Logs", {
         id: value.setHours(0, 0, 0, 0),
         date: date,
-        time: upload === undefined ? 0 : upload.time + timeOfButtonTimer, // Без проверки не создает самую первуюзапись
+        time: upload === undefined ? 0 : upload.time + timeOfButtonTimer,
       });
       const localData = await indexedDb.getValue(
         "Logs",
         value.setHours(0, 0, 0, 0)
-      ); // надо изъять в график суток. нужно для отображения времени после изменений
-      // console.log("upload", upload.time);
-      // console.log("localData", localData.time);
+      );
       return [localData.time];
     },
   });
@@ -144,7 +141,7 @@ const App: React.FC<{}> = () => {
       queryFn: async () => {
         const indexedDb = new IndexedDb("Calendar");
         await indexedDb.createObjectStore(["Logs"]);
-        const allDB = await indexedDb.getAllValue("Logs"); // надо взять 7 последних дат и вывести в статистику данные
+        const allDB = await indexedDb.getAllValue("Logs");
         return allDB;
       },
     });
