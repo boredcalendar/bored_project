@@ -5,35 +5,17 @@ import { Bullet } from "@nivo/bullet";
 import {
   QueryClient,
   QueryClientProvider,
+  useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import localforage from "localforage";
 
 import avatar from "/avatar.svg";
 import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
-
-(async () => {
-  await localforage.setItem("test_items", [
-    { date: new Date(), amount: 1 },
-    { date: new Date().getTime(), amount: 2 },
-  ]);
-  console.log(await localforage.getItem("test_items"));
-})();
-// let openRequest = indexedDB.open("store", 1);
+import IndexedDb from "./IndexedDB";
 
 const queryClient = new QueryClient();
-
-type DayStats = {
-  date: string;
-  time: number;
-};
-
-const db =
-  typeof document === "object"
-    ? window.openDatabase("MyBD", "1.0", "Test DB", 2 * 1024 * 1024)
-    : undefined;
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
@@ -41,53 +23,50 @@ const App: React.FC<{}> = () => {
     value.getMonth() + 1
   }${value.getFullYear()}`;
 
-  const [chooseDay, setChooseDay] = React.useState("");
-  const chooseDayString = new String(chooseDay);
-
-  // openRequest.onupgradeneeded = function () {
-  //   // срабатывает, если на клиенте нет базы данных
-  //   // ...выполнить инициализацию...
-  // };
-
-  // openRequest.onerror = function () {
-  //   console.error("Error", openRequest.error);
-  // };
-
-  // openRequest.onsuccess = function () {
-  //   const db = openRequest.result;
-  //   db.createObjectStore("data", { keyPath: "date" });
-  //   // продолжить работу с базой данных, используя объект db
-  // };
-
-  const { isLoading, error, data } = useQuery({
-    queryKey: ["stats"],
-    queryFn: () =>
-      new Promise<DayStats[]>((resolve) => {
-        db.transaction((tx) => {
-          tx.executeSql("CREATE TABLE IF NOT EXISTS LOGS ( date, time)");
-          tx.executeSql(
-            "SELECT date, SUM(time) as time FROM LOGS WHERE date=? GROUP BY date",
-            [date],
-            (tx, result) => {
-              const res = JSON.stringify(result.rows).replace(
-                /[^a-zа-яё0-9\s]/gi,
-                ""
-              );
-              setChooseDay(res);
-            }
-          );
-
-          tx.executeSql(
-            "SELECT date, SUM(time) as time FROM LOGS GROUP BY date ORDER BY date DESC LIMIT 7", // - отредактировать запрос добавить выборку от сегодня и на 7 дней назад
-            [],
-            (tx, result) => {
-              resolve([...(result.rows as unknown as DayStats[])]);
-            }
-          );
-          // tx.executeSql("DROP TABLE LOGS"); // - command for drop table
-        });
-      }),
+  const {
+    isLoading: loadingDate,
+    error: errorDate,
+    data: dataDate,
+    refetch,
+  } = useQuery({
+    queryKey: [`${value.setHours(0, 0, 0, 0)}`],
+    queryFn: async () => {
+      const indexedDb = new IndexedDb("Calendar");
+      await indexedDb.createObjectStore(["Logs"]);
+      const upload = await indexedDb.getValue(
+        "Logs",
+        value.setHours(0, 0, 0, 0)
+      );
+      await indexedDb.putValue("Logs", {
+        id: value.setHours(0, 0, 0, 0),
+        date: date,
+        time: upload === undefined ? 0 : upload.time,
+      });
+      const localData = await indexedDb.getValue(
+        "Logs",
+        value.setHours(0, 0, 0, 0)
+      );
+      return [localData.time];
+    },
   });
+
+errorDate && console.log(errorDate);
+
+  const useTime = () => {
+    return useMutation(async (addTime: number) => {
+      const indexedDb = new IndexedDb("Calendar");
+      await indexedDb.createObjectStore(["Logs"]);
+      const minuts = dataDate || 0;
+      await indexedDb.putValue("Logs", {
+        id: value.setHours(0, 0, 0, 0),
+        date: date,
+        time: +minuts + addTime,
+      });
+      return;
+    });
+  };
+
+  const addTime = useTime();
 
   const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
     const [minuts, setMinuts] = React.useState(0);
@@ -127,14 +106,11 @@ const App: React.FC<{}> = () => {
             onMouseDown={() => setClick(false)}
             onMouseUp={() => setClick(true)}
             onClick={(e) => {
-              db.transaction(function (tx: any) {
-                tx.executeSql("INSERT INTO LOGS (date , time) VALUES (?, ?)", [
-                  date,
-                  minuts,
-                ]);
-              });
-
               e.stopPropagation();
+              addTime
+                .mutateAsync(minuts)
+                .then(refetch)
+                .catch((err) => console.log(err));
               onClick();
             }}
           >
@@ -147,8 +123,7 @@ const App: React.FC<{}> = () => {
   };
 
   const Today = () => {
-    const timeIsToday =
-      +chooseDayString.slice(-2) || +chooseDayString.slice(-1) || 0; // без перезагрузки не дает обновленную страничку, без нуля выдает NaN
+    const timeIsToday = dataDate || 0; // по нажатию кнопки не записывает значение. Записывает тольео если в консоли открыть массив и нажать на бегунок
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Today</div>
@@ -158,7 +133,7 @@ const App: React.FC<{}> = () => {
             {
               id: "",
               ranges: [0, 60],
-              measures: [timeIsToday],
+              measures: [+timeIsToday], // ошибка второй очереди
               markers: [5, 20],
             },
           ]}
@@ -177,22 +152,35 @@ const App: React.FC<{}> = () => {
     );
   };
 
-  const Statistic = ({ data: stats }: { data: DayStats[] }) => {
-    // я просто думаю что делать когда нет данных
-    const data = stats.map((item) => {
-      return {
-        id: item.date,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [item.time || 0],
-        markers: [5, 20],
-      };
+  const Statistic = () => {
+    const {
+      isLoading: loadingAll,
+      error: errorAll,
+      data: dataAll,
+    } = useQuery({
+      queryKey: [`logs`],
+      queryFn: async () => {
+        const indexedDb = new IndexedDb("Calendar");
+        await indexedDb.createObjectStore(["Logs"]);
+        const allDB = await indexedDb.getAllValue("Logs");
+        return allDB;
+      },
     });
+
+    errorAll && console.log(errorAll);
+    const statistics =
+      dataAll?.slice(0, 7).map((x: any) => ({
+        id: `${x.date}`,
+        ranges: [1, 5, 20, 40, 60],
+        measures: [x.time],
+        markers: [5, 20],
+      })) || [];
 
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Statistic</div>
         <Bullet
-          data={data}
+          data={statistics}
           margin={{ top: 20, right: 25, bottom: 10, left: 0 }}
           spacing={30}
           titleAlign="end"
@@ -223,16 +211,16 @@ const App: React.FC<{}> = () => {
           <img src={celendar} />
         </div>
       </div>
-      {!isLoading && <Calendar onChange={onChange} value={value} />}
+      {!loadingDate && <Calendar onChange={onChange} value={value} />}
       {/* <img src={swipeweek} /> - пример календаря, удалить после верстки */}
-      {!isLoading && data && <Statistic data={data} />}
+      {!loadingDate && dataDate && <Statistic />}
       <div>
         <Today />
       </div>
       <div className="flex items-center justify-center">
         {import.meta.env.DEV && (
           <ButtonTimer
-            onClick={() => queryClient.invalidateQueries(["stats"])}
+            onClick={() => queryClient.invalidateQueries(["Logs"])}
           />
         )}
       </div>
