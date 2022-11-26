@@ -50,7 +50,7 @@ const App: React.FC<{}> = () => {
     },
   });
 
-  errorDate && console.log(errorDate);
+errorDate && console.log(errorDate);
 
   const useTime = () => {
     return useMutation(async (addTime: number) => {
