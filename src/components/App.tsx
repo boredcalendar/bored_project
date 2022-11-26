@@ -15,8 +15,6 @@ import celendar from "/celendar.svg";
 import "react-calendar/dist/Calendar.css";
 import IndexedDb from "./IndexedDB";
 
-// type MyType = [id: number, date: Date, time: number];
-
 const queryClient = new QueryClient();
 
 const App: React.FC<{}> = () => {
@@ -26,10 +24,11 @@ const App: React.FC<{}> = () => {
     value.getMonth() + 1
   }${value.getFullYear()}`;
 
-  const [chooseDay, setChooseDay] = React.useState("");
-  const chooseDayString = new String(chooseDay);
-
-  const { isLoading, error, data } = useQuery({
+  const {
+    isLoading: loadingDate,
+    error: errorDate,
+    data: dataDate,
+  } = useQuery({
     queryKey: [`${value.setHours(0, 0, 0, 0)}`],
     queryFn: async () => {
       const indexedDb = new IndexedDb("Calendar");
@@ -47,17 +46,12 @@ const App: React.FC<{}> = () => {
         "Logs",
         value.setHours(0, 0, 0, 0)
       ); // надо изъять в график суток. нужно для отображения времени после изменений
-      console.log("upload", upload.time);
-      console.log("localData", localData.time);
-
-      const allDB = await indexedDb.getAllValue("Logs"); // надо взять 7 последних дат и вывести в статистику данные
-      console.log("alldb", allDB); // надо вывести в статистику
-
+      // console.log("upload", upload.time);
+      // console.log("localData", localData.time);
       return [localData.time];
     },
   });
-
-  console.log(data);
+  errorDate && console.log(errorDate);
 
   const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
     const [minuts, setMinuts] = React.useState(0);
@@ -111,7 +105,7 @@ const App: React.FC<{}> = () => {
   };
 
   const Today = () => {
-    const timeIsToday = data || 0; // по нажатию кнопки не записывает значение. Записывает тольео если в консоли открыть массив и нажать на бегунок
+    const timeIsToday = dataDate || 0; // по нажатию кнопки не записывает значение. Записывает тольео если в консоли открыть массив и нажать на бегунок
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Today</div>
@@ -141,21 +135,39 @@ const App: React.FC<{}> = () => {
   };
 
   const Statistic = () => {
-    // сюда добавить allDB
-    const data = [
-      {
-        id: "item.date",
-        ranges: [1, 5, 20, 40, 60],
-        measures: [43],
-        markers: [5, 20],
+    const {
+      isLoading: loadingAll,
+      error: errorAll,
+      data: dataAll,
+    } = useQuery({
+      queryKey: [`logs`],
+      queryFn: async () => {
+        const indexedDb = new IndexedDb("Calendar");
+        await indexedDb.createObjectStore(["Logs"]);
+        const allDB = await indexedDb.getAllValue("Logs"); // надо взять 7 последних дат и вывести в статистику данные
+        return allDB;
       },
-    ];
+    });
+    // dataAll?.map((x) => console.log(x));
 
+    errorAll && console.log(errorAll);
+    console.log("loadingAll", loadingAll);
+    const statistics =
+      dataAll?.map((x: any) => [
+        {
+          id: `${x.date}`,
+          ranges: [1, 5, 20, 40, 60],
+          measures: [x.time],
+          markers: [5, 20],
+        },
+      ]) || [];
+
+    console.log(statistics); // - не выводит графики Bullet пишет что нужен key. куда его вводить я не знаю
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Statistic</div>
         <Bullet
-          data={data}
+          data={statistics}
           margin={{ top: 20, right: 25, bottom: 10, left: 0 }}
           spacing={30}
           titleAlign="end"
@@ -186,9 +198,9 @@ const App: React.FC<{}> = () => {
           <img src={celendar} />
         </div>
       </div>
-      {!isLoading && <Calendar onChange={onChange} value={value} />}
+      {!loadingDate && <Calendar onChange={onChange} value={value} />}
       {/* <img src={swipeweek} /> - пример календаря, удалить после верстки */}
-      {!isLoading && data && <Statistic />}
+      {!loadingDate && dataDate && <Statistic />}
       <div>
         <Today />
       </div>
