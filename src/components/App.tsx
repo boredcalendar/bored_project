@@ -50,18 +50,20 @@ const App: React.FC<{}> = () => {
     },
   });
 
-errorDate && console.log(errorDate);
+  errorDate && console.log(errorDate);
 
   const useTime = () => {
     return useMutation(async (addTime: number) => {
       const indexedDb = new IndexedDb("Calendar");
       await indexedDb.createObjectStore(["Logs"]);
       const minuts = dataDate || 0;
-      await indexedDb.putValue("Logs", {
-        id: value.setHours(0, 0, 0, 0),
-        date: date,
-        time: +minuts + addTime,
-      });
+      await indexedDb
+        .putValue("Logs", {
+          id: value.setHours(0, 0, 0, 0),
+          date: date,
+          time: +minuts + addTime,
+        })
+        .then(refetch);
       return;
     });
   };
@@ -107,10 +109,7 @@ errorDate && console.log(errorDate);
             onMouseUp={() => setClick(true)}
             onClick={(e) => {
               e.stopPropagation();
-              addTime
-                .mutateAsync(minuts)
-                .then(refetch)
-                .catch((err) => console.log(err));
+              addTime.mutateAsync(minuts).catch((err) => console.log(err));
               onClick();
             }}
           >
@@ -123,7 +122,7 @@ errorDate && console.log(errorDate);
   };
 
   const Today = () => {
-    const timeIsToday = dataDate || 0; // по нажатию кнопки не записывает значение. Записывает тольео если в консоли открыть массив и нажать на бегунок
+    const timeIsToday = dataDate || 0;
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Today</div>
@@ -133,7 +132,7 @@ errorDate && console.log(errorDate);
             {
               id: "",
               ranges: [0, 60],
-              measures: [+timeIsToday], // ошибка второй очереди
+              measures: [+timeIsToday],
               markers: [5, 20],
             },
           ]}
