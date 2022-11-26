@@ -5,6 +5,7 @@ import { Bullet } from "@nivo/bullet";
 import {
   QueryClient,
   QueryClientProvider,
+  useMutation,
   useQuery,
 } from "@tanstack/react-query";
 
@@ -18,7 +19,6 @@ const queryClient = new QueryClient();
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
-  const [timeOfButtonTimer, setTimeOfButtonTimer] = React.useState(0);
   const date = `${value.getDate()}${
     value.getMonth() + 1
   }${value.getFullYear()}`;
@@ -27,6 +27,7 @@ const App: React.FC<{}> = () => {
     isLoading: loadingDate,
     error: errorDate,
     data: dataDate,
+    refetch,
   } = useQuery({
     queryKey: [`${value.setHours(0, 0, 0, 0)}`],
     queryFn: async () => {
@@ -39,7 +40,7 @@ const App: React.FC<{}> = () => {
       await indexedDb.putValue("Logs", {
         id: value.setHours(0, 0, 0, 0),
         date: date,
-        time: upload === undefined ? 0 : upload.time + timeOfButtonTimer,
+        time: upload === undefined ? 0 : upload.time,
       });
       const localData = await indexedDb.getValue(
         "Logs",
@@ -48,7 +49,24 @@ const App: React.FC<{}> = () => {
       return [localData.time];
     },
   });
+
   errorDate && console.log(errorDate);
+
+  const useTime = () => {
+    return useMutation(async (addTime: number) => {
+      const indexedDb = new IndexedDb("Calendar");
+      await indexedDb.createObjectStore(["Logs"]);
+      const minuts = dataDate || 0;
+      await indexedDb.putValue("Logs", {
+        id: value.setHours(0, 0, 0, 0),
+        date: date,
+        time: +minuts + addTime,
+      });
+      return;
+    });
+  };
+
+  const addTime = useTime();
 
   const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
     const [minuts, setMinuts] = React.useState(0);
@@ -88,8 +106,11 @@ const App: React.FC<{}> = () => {
             onMouseDown={() => setClick(false)}
             onMouseUp={() => setClick(true)}
             onClick={(e) => {
-              setTimeOfButtonTimer(minuts);
               e.stopPropagation();
+              addTime
+                .mutateAsync(minuts)
+                .then(refetch)
+                .catch((err) => console.log(err));
               onClick();
             }}
           >
@@ -112,7 +133,7 @@ const App: React.FC<{}> = () => {
             {
               id: "",
               ranges: [0, 60],
-              measures: [timeIsToday], // ошибка второй очереди
+              measures: [+timeIsToday], // ошибка второй очереди
               markers: [5, 20],
             },
           ]}
