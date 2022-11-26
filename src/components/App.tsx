@@ -217,11 +217,7 @@ const App: React.FC<{}> = () => {
         <Today />
       </div>
       <div className="flex items-center justify-center">
-        {import.meta.env.DEV && (
-          <ButtonTimer
-            onClick={() => queryClient.invalidateQueries(["Logs"])}
-          />
-        )}
+        <ButtonTimer onClick={() => queryClient.invalidateQueries(["Logs"])} />
       </div>
     </div>
   );
