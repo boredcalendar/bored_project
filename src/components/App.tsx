@@ -14,6 +14,7 @@ import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
 import IndexedDb from "./IndexedDB";
+import { useClientOnly } from "./useClientOnly";
 
 const queryClient = new QueryClient();
 
@@ -71,31 +72,34 @@ const App: React.FC<{}> = () => {
   const addTime = useTime();
 
   const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
+    const clientOnly = useClientOnly();
     const [minuts, setMinuts] = React.useState(0);
     const [click, setClick] = React.useState(true);
 
     return (
       <>
-        <CircularSlider
-          width={165}
-          min={0}
-          max={15}
-          valueFontSize="2rem"
-          label="You Bored?"
-          labelColor="#FFFFFF"
-          labelBottom={true}
-          labelFontSize="1rem"
-          knobColor="#1C1C1E"
-          progressColorFrom="#B1D0E6"
-          progressColorTo="#9CA3AF"
-          progressSize={16}
-          trackSize={16}
-          trackColor="#F9FAFB"
-          dataIndex={0}
-          onChange={(value: any) => {
-            setMinuts(value);
-          }}
-        />
+        {clientOnly && (
+          <CircularSlider
+            width={165}
+            min={0}
+            max={15}
+            valueFontSize="2rem"
+            label="You Bored?"
+            labelColor="#FFFFFF"
+            labelBottom={true}
+            labelFontSize="1rem"
+            knobColor="#1C1C1E"
+            progressColorFrom="#B1D0E6"
+            progressColorTo="#9CA3AF"
+            progressSize={16}
+            trackSize={16}
+            trackColor="#F9FAFB"
+            dataIndex={0}
+            onChange={(value: any) => {
+              setMinuts(value);
+            }}
+          />
+        )}
         <div
           className={
             click
