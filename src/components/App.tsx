@@ -1,6 +1,6 @@
 import React from "react";
 import Calendar from "react-calendar";
-import CircularSlider from "@fseehawer/react-circular-slider";
+import * as CircularSliderM from "@fseehawer/react-circular-slider";
 import { Bullet } from "@nivo/bullet";
 import {
   QueryClient,
@@ -14,7 +14,9 @@ import celendar from "/celendar.svg";
 // import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
 import "react-calendar/dist/Calendar.css";
 import IndexedDb from "./IndexedDB";
-import { useClientOnly } from "./useClientOnly";
+
+const CircularSlider: typeof CircularSliderM.default = (CircularSliderM as any)
+  .default.default;
 
 const queryClient = new QueryClient();
 
@@ -72,13 +74,12 @@ const App: React.FC<{}> = () => {
   const addTime = useTime();
 
   const ButtonTimer = ({ onClick }: { onClick: () => void }) => {
-    const clientOnly = useClientOnly();
     const [minuts, setMinuts] = React.useState(0);
     const [click, setClick] = React.useState(true);
 
     return (
       <>
-        {clientOnly && (
+        {
           <CircularSlider
             width={165}
             min={0}
@@ -99,7 +100,7 @@ const App: React.FC<{}> = () => {
               setMinuts(value);
             }}
           />
-        )}
+        }
         <div
           className={
             click
