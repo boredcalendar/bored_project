@@ -194,13 +194,17 @@ const App: React.FC<{}> = () => {
     });
 
     errorAll && console.log(errorAll);
+
     const statistics =
-      dataAll?.slice(0, 7).map((x: any) => ({
-        id: `${x.date}`,
-        ranges: [1, 5, 20, 40, 60],
-        measures: [x.time],
-        markers: [5, 20],
-      })) || [];
+      dataAll
+        ?.reverse()
+        .map((x: any) => ({
+          id: `${x.date}`,
+          ranges: [1, 5, 20, 40, 60],
+          measures: [x.time],
+          markers: [5, 20],
+        }))
+        .slice(0, 7) || [];
 
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
