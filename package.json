@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "test": "astro check",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -32,5 +33,6 @@
   },
   "devDependencies": {
     "@types/react-calendar": "^3.9.0"
-  }
+  },
+  "packageManager": "pnpm@10.33.2"
 }
