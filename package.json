@@ -12,27 +12,27 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/image": "^0.11.4",
-    "@astrojs/react": "^1.2.2",
-    "@astrojs/tailwind": "^2.1.2",
-    "@fseehawer/react-circular-slider": "^2.5.16",
-    "@nivo/bullet": "^0.80.0",
-    "@nivo/core": "^0.80.0",
-    "@tanstack/react-query": "^4.16.1",
-    "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6",
-    "@types/websql": "^0.0.27",
-    "astro": "^1.6.7",
-    "idb": "^7.1.1",
-    "prop-types": "^15.8.1",
-    "react": "^18.0.0",
-    "react-calendar": "^4.0.0",
-    "react-dom": "^18.0.0",
-    "tailwind-merge": "^1.8.0",
-    "tailwindcss": "^3.0.24"
+    "@astrojs/image": "0.11.4",
+    "@astrojs/react": "1.2.2",
+    "@astrojs/tailwind": "2.1.2",
+    "@fseehawer/react-circular-slider": "2.5.16",
+    "@nivo/bullet": "0.80.0",
+    "@nivo/core": "0.80.0",
+    "@tanstack/react-query": "4.16.1",
+    "@types/react": "18.0.25",
+    "@types/react-dom": "18.0.8",
+    "@types/websql": "0.0.27",
+    "astro": "1.6.7",
+    "idb": "7.1.1",
+    "prop-types": "15.8.1",
+    "react": "18.2.0",
+    "react-calendar": "4.0.0",
+    "react-dom": "18.2.0",
+    "tailwind-merge": "1.8.0",
+    "tailwindcss": "3.2.3"
   },
   "devDependencies": {
-    "@types/react-calendar": "^3.9.0"
+    "@types/react-calendar": "3.9.0"
   },
   "packageManager": "pnpm@10.33.2"
 }

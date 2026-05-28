@@ -1,7 +1,6 @@
 import React from "react";
 import Calendar from "react-calendar";
-import * as CircularSliderM from "@fseehawer/react-circular-slider";
-import CircularSlider from "@fseehawer/react-circular-slider";
+import * as CircularSliderModule from "@fseehawer/react-circular-slider";
 import { Bullet } from "@nivo/bullet";
 import {
   QueryClient,
@@ -16,8 +15,8 @@ import celendar from "/celendar.svg";
 import "react-calendar/dist/Calendar.css";
 import IndexedDb from "./IndexedDB";
 
-const CircularSliderS: typeof CircularSliderM.default = (CircularSliderM as any)
-  .default.default;
+const CircularSlider =
+  (CircularSliderModule.default as any).default ?? CircularSliderModule.default;
 
 const queryClient = new QueryClient();
 
@@ -80,49 +79,26 @@ const App: React.FC<{}> = () => {
 
     return (
       <>
-        {import.meta.env.DEV ? (
-          <CircularSlider
-            width={165}
-            min={0}
-            max={15}
-            valueFontSize="2rem"
-            label="You Bored?"
-            labelColor="#FFFFFF"
-            labelBottom={true}
-            labelFontSize="1rem"
-            knobColor="#1C1C1E"
-            progressColorFrom="#B1D0E6"
-            progressColorTo="#9CA3AF"
-            progressSize={16}
-            trackSize={16}
-            trackColor="#F9FAFB"
-            dataIndex={0}
-            onChange={(value: any) => {
-              setMinuts(value);
-            }}
-          />
-        ) : (
-          <CircularSliderS
-            width={165}
-            min={0}
-            max={15}
-            valueFontSize="2rem"
-            label="You Bored?"
-            labelColor="#FFFFFF"
-            labelBottom={true}
-            labelFontSize="1rem"
-            knobColor="#1C1C1E"
-            progressColorFrom="#B1D0E6"
-            progressColorTo="#9CA3AF"
-            progressSize={16}
-            trackSize={16}
-            trackColor="#F9FAFB"
-            dataIndex={0}
-            onChange={(value: any) => {
-              setMinuts(value);
-            }}
-          />
-        )}
+        <CircularSlider
+          width={165}
+          min={0}
+          max={15}
+          valueFontSize="2rem"
+          label="You Bored?"
+          labelColor="#FFFFFF"
+          labelBottom={true}
+          labelFontSize="1rem"
+          knobColor="#1C1C1E"
+          progressColorFrom="#B1D0E6"
+          progressColorTo="#9CA3AF"
+          progressSize={16}
+          trackSize={16}
+          trackColor="#F9FAFB"
+          dataIndex={0}
+          onChange={(value: any) => {
+            setMinuts(value);
+          }}
+        />
         <div
           className={
             click
