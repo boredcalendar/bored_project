@@ -1,53 +1,57 @@
-# Welcome to [Astro](https://astro.build)
+# Bored Calendar
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/s/github/withastro/astro/tree/latest/examples/basics)
+> "Sometimes you've just got to be bored, kid!"
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Bored Calendar is a playful digital wellbeing app. Its purpose isn't to eliminate
+boredom or maximize productivity — it's to help you reclaim boredom as a healthy
+mental space: room for reflection, creativity, and intentional choice.
 
-![basics](https://user-images.githubusercontent.com/4677417/186188965-73453154-fdec-4d6b-9c34-cb35c248ae5b.png)
+Log or schedule a bored moment, sit with it instead of filling it, reflect on what
+surfaced, and watch simple patterns emerge over time. Data is stored locally on your
+device by default.
 
-## 🚀 Project Structure
+See [AGENTS.md](./AGENTS.md) for the full product intent and direction.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Tech stack
+
+- [Astro](https://astro.build) with the React integration
+- [Tailwind CSS](https://tailwindcss.com)
+- [TanStack Query](https://tanstack.com/query) + [`idb`](https://github.com/jakearchibald/idb) for local-first IndexedDB storage
+- [Vite+ (`vp`)](https://viteplus.dev) as the command interface (delegates to pnpm)
+
+## Getting started
+
+This project uses [Vite+](https://viteplus.dev) (`vp`) as the command interface for
+day-to-day work. `vp` delegates dependency management to the project's package
+manager (pnpm), so the lockfile and `packageManager` field remain pnpm.
+
+Node is pinned in `.node-version` (read by mise, vp, and Netlify).
+
+| Command        | Action                                         |
+| :------------- | :--------------------------------------------- |
+| `vp install`   | Install dependencies (delegates to pnpm)       |
+| `vp run dev`   | Start the local dev server at `localhost:4321` |
+| `vp check`     | Run format, lint, and type checks              |
+| `vp run test`  | Run `astro check`                              |
+| `vp run build` | Build the production site to `./dist/`         |
+| `vp preview`   | Preview the production build locally           |
+
+Prefer plain pnpm? `pnpm install` / `pnpm run dev` work too — `vp` simply wraps them.
+
+## Project structure
 
 ```
 /
-├── public/
-│   └── favicon.svg
+├── public/              # static assets
 ├── src/
-│   ├── components/
-│   │   └── Card.astro
+│   ├── components/       # Astro + React components
 │   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
+│   └── pages/           # file-based routes
+├── astro.config.mjs
 └── package.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Deploying
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                | Action                                             |
-| :--------------------- | :------------------------------------------------- |
-| `npm install`          | Installs dependencies                              |
-| `npm run dev`          | Starts local dev server at `localhost:3000`        |
-| `npm run build`        | Build your production site to `./dist/`            |
-| `npm run preview`      | Preview your build locally, before deploying       |
-| `npm run astro ...`    | Run CLI commands like `astro add`, `astro preview` |
-| `npm run astro --help` | Get help using the Astro CLI                       |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-https://www.npmjs.com/package/@fseehawer/react-circular-slider
-
-# bored_project
+The site deploys to Netlify (`netlify.toml`): it builds with `pnpm run build` and
+publishes `dist/`.
