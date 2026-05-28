@@ -10,28 +10,28 @@ importers:
     dependencies:
       '@astrojs/react':
         specifier: 5.0.6
-        version: 5.0.6(@types/react-dom@18.0.8)(@types/react@18.0.25)(jiti@2.7.0)(lightningcss@1.32.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(yaml@2.9.0)
+        version: 5.0.6(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(jiti@2.7.0)(lightningcss@1.32.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(yaml@2.9.0)
       '@fseehawer/react-circular-slider':
         specifier: 3.3.3
-        version: 3.3.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 3.3.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@nivo/bullet':
         specifier: 0.99.0
-        version: 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@nivo/core':
         specifier: 0.99.0
-        version: 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@tailwindcss/vite':
         specifier: 4.3.0
         version: 4.3.0(vite@7.3.3(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
       '@tanstack/react-query':
         specifier: 5.100.14
-        version: 5.100.14(react@18.2.0)
+        version: 5.100.14(react@19.2.6)
       '@types/react':
-        specifier: 18.0.25
-        version: 18.0.25
+        specifier: 19.2.15
+        version: 19.2.15
       '@types/react-dom':
-        specifier: 18.0.8
-        version: 18.0.8
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.15)
       astro:
         specifier: 6.4.2
         version: 6.4.2(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.4)(yaml@2.9.0)
@@ -39,14 +39,14 @@ importers:
         specifier: 8.0.3
         version: 8.0.3
       react:
-        specifier: 18.2.0
-        version: 18.2.0
+        specifier: 19.2.6
+        version: 19.2.6
       react-calendar:
         specifier: 6.0.1
-        version: 6.0.1(@types/react@18.0.25)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        version: 6.0.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
+        specifier: 19.2.6
+        version: 19.2.6(react@19.2.6)
       tailwindcss:
         specifier: 4.3.0
         version: 4.3.0
@@ -991,17 +991,13 @@ packages:
   '@types/nlcst@2.0.3':
     resolution: {integrity: sha512-vSYNSDe6Ix3q+6Z7ri9lyWqgGhJTmzRjZRqyq15N0Z/1/UnVsno9G/N40NBijoYx2seFDIl0+B2mgAb9mezUCA==}
 
-  '@types/prop-types@15.7.15':
-    resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
+  '@types/react-dom@19.2.3':
+    resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
+    peerDependencies:
+      '@types/react': ^19.2.0
 
-  '@types/react-dom@18.0.8':
-    resolution: {integrity: sha512-C3GYO0HLaOkk9dDAz3Dl4sbe4AKUGTCfFIZsz3n/82dPNN8Du533HzKatDxeUYWu24wJgMP1xICqkWk1YOLOIw==}
-
-  '@types/react@18.0.25':
-    resolution: {integrity: sha512-xD6c0KDT4m7n9uD4ZHi02lzskaiqcBxf4zi+tXZY98a04wvc0hi/TcCPC2FOESZi51Nd7tlUeOJY8RofL799/g==}
-
-  '@types/scheduler@0.26.0':
-    resolution: {integrity: sha512-WFHp9YUJQ6CKshqoC37iOlHnQSmxNc795UhB26CyBBttrN9svdIrUjl/NjnNmfcwtncN0h/0PPAFWv9ovP8mLA==}
+  '@types/react@19.2.15':
+    resolution: {integrity: sha512-eRwcGNHve+E8qtEQSSRl6urh+rFop4v8gm6O8rGv25CodbvFdLjA1vVQ1KkiFE0w0UPOnb8tDiFKL5lp0rtY5Q==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -1859,10 +1855,10 @@ packages:
       '@types/react':
         optional: true
 
-  react-dom@18.2.0:
-    resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
+  react-dom@19.2.6:
+    resolution: {integrity: sha512-0prMI+hvBbPjsWnxDLxlCGyM8PN6UuWjEUCYmZhO67xIV9Xasa/r/vDnq+Xyq4Lo27g8QSbO5YzARu0D1Sps3g==}
     peerDependencies:
-      react: ^18.2.0
+      react: ^19.2.6
 
   react-refresh@0.18.0:
     resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
@@ -1874,8 +1870,8 @@ packages:
       react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  react@18.2.0:
-    resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
+  react@19.2.6:
+    resolution: {integrity: sha512-sfWGGfavi0xr8Pg0sVsyHMAOziVYKgPLNrS7ig+ivMNb3wbCBw3KxtflsGBAwD3gYQlE/AEZsTLgToRrSCjb0Q==}
     engines: {node: '>=0.10.0'}
 
   readdirp@4.1.2:
@@ -1961,8 +1957,8 @@ packages:
     resolution: {integrity: sha512-6R3J5M4AcbtLUdZmRv2SygeVaM7IhrLXu9BmnOGmmACak8fiUtOsYNWUS4uK7upbmHIBbLBeFeI//477BKLBzA==}
     engines: {node: '>=11.0.0'}
 
-  scheduler@0.23.2:
-    resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
+  scheduler@0.27.0:
+    resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -2457,15 +2453,15 @@ snapshots:
     dependencies:
       prismjs: 1.30.0
 
-  '@astrojs/react@5.0.6(@types/react-dom@18.0.8)(@types/react@18.0.25)(jiti@2.7.0)(lightningcss@1.32.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(yaml@2.9.0)':
+  '@astrojs/react@5.0.6(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(jiti@2.7.0)(lightningcss@1.32.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(yaml@2.9.0)':
     dependencies:
       '@astrojs/internal-helpers': 0.10.0
-      '@types/react': 18.0.25
-      '@types/react-dom': 18.0.8
+      '@types/react': 19.2.15
+      '@types/react-dom': 19.2.3(@types/react@19.2.15)
       '@vitejs/plugin-react': 5.2.0(vite@7.3.3(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0))
       devalue: 5.8.1
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
       ultrahtml: 1.6.0
       vite: 7.3.3(jiti@2.7.0)(lightningcss@1.32.0)(yaml@2.9.0)
     transitivePeerDependencies:
@@ -2728,10 +2724,10 @@ snapshots:
   '@esbuild/win32-x64@0.27.7':
     optional: true
 
-  '@fseehawer/react-circular-slider@3.3.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@fseehawer/react-circular-slider@3.3.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
   '@img/colour@1.1.0':
     optional: true
@@ -2851,40 +2847,40 @@ snapshots:
 
   '@jsr/jlarky__gha-ts@0.2.2': {}
 
-  '@nivo/axes@0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@nivo/axes@0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@nivo/core': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@nivo/core': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@nivo/scales': 0.99.0
-      '@nivo/text': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/theming': 0.99.0(react@18.2.0)
-      '@react-spring/web': 9.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@nivo/text': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/theming': 0.99.0(react@19.2.6)
+      '@react-spring/web': 9.4.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@types/d3-format': 1.4.5
       '@types/d3-time-format': 2.3.4
       d3-format: 1.4.5
       d3-time-format: 3.0.0
-      react: 18.2.0
+      react: 19.2.6
     transitivePeerDependencies:
       - react-dom
 
-  '@nivo/bullet@0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@nivo/bullet@0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@nivo/axes': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/colors': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/core': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/legends': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@nivo/axes': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/colors': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/core': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/legends': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@nivo/scales': 0.99.0
-      '@nivo/text': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/theming': 0.99.0(react@18.2.0)
-      '@nivo/tooltip': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@react-spring/web': 9.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      react: 18.2.0
+      '@nivo/text': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/theming': 0.99.0(react@19.2.6)
+      '@nivo/tooltip': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@react-spring/web': 9.4.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react: 19.2.6
     transitivePeerDependencies:
       - react-dom
 
-  '@nivo/colors@0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@nivo/colors@0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@nivo/core': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/theming': 0.99.0(react@18.2.0)
+      '@nivo/core': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/theming': 0.99.0(react@19.2.6)
       '@types/d3-color': 3.1.3
       '@types/d3-scale': 4.0.9
       '@types/d3-scale-chromatic': 3.1.0
@@ -2892,15 +2888,15 @@ snapshots:
       d3-scale: 4.0.2
       d3-scale-chromatic: 3.1.0
       lodash: 4.18.1
-      react: 18.2.0
+      react: 19.2.6
     transitivePeerDependencies:
       - react-dom
 
-  '@nivo/core@0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@nivo/core@0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@nivo/theming': 0.99.0(react@18.2.0)
-      '@nivo/tooltip': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@react-spring/web': 9.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      '@nivo/theming': 0.99.0(react@19.2.6)
+      '@nivo/tooltip': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@react-spring/web': 9.4.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@types/d3-shape': 3.1.8
       d3-color: 3.1.0
       d3-format: 1.4.5
@@ -2910,21 +2906,21 @@ snapshots:
       d3-shape: 3.2.0
       d3-time-format: 3.0.0
       lodash: 4.18.1
-      react: 18.2.0
-      react-virtualized-auto-sizer: 1.0.26(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      use-debounce: 10.1.1(react@18.2.0)
+      react: 19.2.6
+      react-virtualized-auto-sizer: 1.0.26(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      use-debounce: 10.1.1(react@19.2.6)
     transitivePeerDependencies:
       - react-dom
 
-  '@nivo/legends@0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@nivo/legends@0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@nivo/colors': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/core': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/text': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/theming': 0.99.0(react@18.2.0)
+      '@nivo/colors': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/core': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/text': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/theming': 0.99.0(react@19.2.6)
       '@types/d3-scale': 4.0.9
       d3-scale: 4.0.2
-      react: 18.2.0
+      react: 19.2.6
     transitivePeerDependencies:
       - react-dom
 
@@ -2940,63 +2936,63 @@ snapshots:
       d3-time-format: 3.0.0
       lodash: 4.18.1
 
-  '@nivo/text@0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@nivo/text@0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@nivo/core': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/theming': 0.99.0(react@18.2.0)
-      '@react-spring/web': 9.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      react: 18.2.0
+      '@nivo/core': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/theming': 0.99.0(react@19.2.6)
+      '@react-spring/web': 9.4.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react: 19.2.6
     transitivePeerDependencies:
       - react-dom
 
-  '@nivo/theming@0.99.0(react@18.2.0)':
+  '@nivo/theming@0.99.0(react@19.2.6)':
     dependencies:
       lodash: 4.18.1
-      react: 18.2.0
+      react: 19.2.6
 
-  '@nivo/tooltip@0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@nivo/tooltip@0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@nivo/core': 0.99.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@nivo/theming': 0.99.0(react@18.2.0)
-      '@react-spring/web': 9.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      react: 18.2.0
+      '@nivo/core': 0.99.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@nivo/theming': 0.99.0(react@19.2.6)
+      '@react-spring/web': 9.4.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react: 19.2.6
     transitivePeerDependencies:
       - react-dom
 
   '@oslojs/encoding@1.1.0': {}
 
-  '@react-spring/animated@9.4.5(react@18.2.0)':
+  '@react-spring/animated@9.4.5(react@19.2.6)':
     dependencies:
-      '@react-spring/shared': 9.4.5(react@18.2.0)
+      '@react-spring/shared': 9.4.5(react@19.2.6)
       '@react-spring/types': 9.4.5
-      react: 18.2.0
+      react: 19.2.6
 
-  '@react-spring/core@9.4.5(react@18.2.0)':
+  '@react-spring/core@9.4.5(react@19.2.6)':
     dependencies:
-      '@react-spring/animated': 9.4.5(react@18.2.0)
+      '@react-spring/animated': 9.4.5(react@19.2.6)
       '@react-spring/rafz': 9.4.5
-      '@react-spring/shared': 9.4.5(react@18.2.0)
+      '@react-spring/shared': 9.4.5(react@19.2.6)
       '@react-spring/types': 9.4.5
-      react: 18.2.0
+      react: 19.2.6
 
   '@react-spring/rafz@9.4.5': {}
 
-  '@react-spring/shared@9.4.5(react@18.2.0)':
+  '@react-spring/shared@9.4.5(react@19.2.6)':
     dependencies:
       '@react-spring/rafz': 9.4.5
       '@react-spring/types': 9.4.5
-      react: 18.2.0
+      react: 19.2.6
 
   '@react-spring/types@9.4.5': {}
 
-  '@react-spring/web@9.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@react-spring/web@9.4.5(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@react-spring/animated': 9.4.5(react@18.2.0)
-      '@react-spring/core': 9.4.5(react@18.2.0)
-      '@react-spring/shared': 9.4.5(react@18.2.0)
+      '@react-spring/animated': 9.4.5(react@19.2.6)
+      '@react-spring/core': 9.4.5(react@19.2.6)
+      '@react-spring/shared': 9.4.5(react@19.2.6)
       '@react-spring/types': 9.4.5
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
   '@rolldown/pluginutils@1.0.0-rc.3': {}
 
@@ -3193,10 +3189,10 @@ snapshots:
 
   '@tanstack/query-core@5.100.14': {}
 
-  '@tanstack/react-query@5.100.14(react@18.2.0)':
+  '@tanstack/react-query@5.100.14(react@19.2.6)':
     dependencies:
       '@tanstack/query-core': 5.100.14
-      react: 18.2.0
+      react: 19.2.6
 
   '@types/babel__core@7.20.5':
     dependencies:
@@ -3269,19 +3265,13 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
-  '@types/prop-types@15.7.15': {}
-
-  '@types/react-dom@18.0.8':
+  '@types/react-dom@19.2.3(@types/react@19.2.15)':
     dependencies:
-      '@types/react': 18.0.25
+      '@types/react': 19.2.15
 
-  '@types/react@18.0.25':
+  '@types/react@19.2.15':
     dependencies:
-      '@types/prop-types': 15.7.15
-      '@types/scheduler': 0.26.0
       csstype: 3.2.3
-
-  '@types/scheduler@0.26.0': {}
 
   '@types/unist@3.0.3': {}
 
@@ -4392,33 +4382,30 @@ snapshots:
 
   radix3@1.1.2: {}
 
-  react-calendar@6.0.1(@types/react@18.0.25)(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  react-calendar@6.0.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       '@wojtekmaj/date-utils': 2.0.2
       clsx: 2.1.1
       get-user-locale: 3.0.0
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
       warning: 4.0.3
     optionalDependencies:
-      '@types/react': 18.0.25
+      '@types/react': 19.2.15
 
-  react-dom@18.2.0(react@18.2.0):
+  react-dom@19.2.6(react@19.2.6):
     dependencies:
-      loose-envify: 1.4.0
-      react: 18.2.0
-      scheduler: 0.23.2
+      react: 19.2.6
+      scheduler: 0.27.0
 
   react-refresh@0.18.0: {}
 
-  react-virtualized-auto-sizer@1.0.26(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
+  react-virtualized-auto-sizer@1.0.26(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
-  react@18.2.0:
-    dependencies:
-      loose-envify: 1.4.0
+  react@19.2.6: {}
 
   readdirp@4.1.2: {}
 
@@ -4568,9 +4555,7 @@ snapshots:
 
   sax@1.6.0: {}
 
-  scheduler@0.23.2:
-    dependencies:
-      loose-envify: 1.4.0
+  scheduler@0.27.0: {}
 
   semver@6.3.1: {}
 
@@ -4763,9 +4748,9 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  use-debounce@10.1.1(react@18.2.0):
+  use-debounce@10.1.1(react@19.2.6):
     dependencies:
-      react: 18.2.0
+      react: 19.2.6
 
   vfile-location@5.0.3:
     dependencies:
