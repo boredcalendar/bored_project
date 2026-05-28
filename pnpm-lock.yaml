@@ -63,9 +63,15 @@ importers:
         specifier: 3.2.3
         version: 3.2.3(postcss@8.5.15)
     devDependencies:
+      '@jlarky/gha-ts':
+        specifier: npm:@jsr/jlarky__gha-ts@^0.2.2
+        version: '@jsr/jlarky__gha-ts@0.2.2'
       '@types/react-calendar':
         specifier: 3.9.0
         version: 3.9.0
+      yaml:
+        specifier: ^2.9.0
+        version: 2.9.0
 
 packages:
 
@@ -258,6 +264,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@jsr/jlarky__gha-ts@0.2.2':
+    resolution: {integrity: sha512-c+kEzDnX0hyL9gz2LUg1pi1K24z0LH5nq2wVmva8PBDbMYX5y2aOKxq+87yXGMZHiTiLS7OCCknSDKqRIXmJSA==, tarball: https://npm.jsr.io/~/11/@jsr/jlarky__gha-ts/0.2.2.tgz}
 
   '@ljharb/has-package-exports-patterns@0.0.2':
     resolution: {integrity: sha512-4/RWEeXDO6bocPONheFe6gX/oQdP/bEpv0oL4HqjPP5DCenBSt0mHgahppY49N0CpsaqffdwPq+TlX9CYOq2Dw==}
@@ -2272,6 +2281,11 @@ packages:
     resolution: {integrity: sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA==}
     engines: {node: '>= 6'}
 
+  yaml@2.9.0:
+    resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
+
   yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
     engines: {node: '>=12'}
@@ -2566,6 +2580,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@jsr/jlarky__gha-ts@0.2.2': {}
 
   '@ljharb/has-package-exports-patterns@0.0.2': {}
 
@@ -4810,6 +4826,8 @@ snapshots:
   yallist@3.1.1: {}
 
   yaml@1.10.3: {}
+
+  yaml@2.9.0: {}
 
   yargs-parser@21.1.1: {}
 
