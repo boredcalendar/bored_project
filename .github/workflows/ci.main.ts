@@ -24,6 +24,7 @@ const wf = workflow({
           name: "Check generated workflows are in sync",
           run: 'for f in .github/workflows/*.main.ts; do node "$f"; done\ngit diff --exit-code .github/workflows/',
         },
+        { name: "Check (non-blocking)", run: "vp check || true" },
         { run: "vp run test" },
         { run: "vp run build" },
       ],
