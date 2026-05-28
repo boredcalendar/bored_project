@@ -15,8 +15,36 @@ import celendar from "/celendar.svg";
 import "react-calendar/dist/Calendar.css";
 import IndexedDb from "./IndexedDB";
 
+type CircularSliderProps = {
+  width: number;
+  min: number;
+  max: number;
+  valueFontSize: string;
+  label: string;
+  labelColor: string;
+  labelBottom: boolean;
+  labelFontSize: string;
+  knobColor: string;
+  progressColorFrom: string;
+  progressColorTo: string;
+  progressSize: number;
+  trackSize: number;
+  trackColor: string;
+  dataIndex: number;
+  onChange: (value: number) => void;
+};
+
+type CircularSliderComponent = React.ComponentType<CircularSliderProps>;
+type CircularSliderExport =
+  | CircularSliderComponent
+  | { default: CircularSliderComponent };
+
+const circularSliderExport =
+  CircularSliderModule.default as CircularSliderExport;
 const CircularSlider =
-  (CircularSliderModule.default as any).default ?? CircularSliderModule.default;
+  typeof circularSliderExport === "function"
+    ? circularSliderExport
+    : circularSliderExport.default;
 
 const queryClient = new QueryClient();
 
