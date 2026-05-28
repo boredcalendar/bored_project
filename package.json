@@ -12,7 +12,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/image": "0.11.4",
     "@astrojs/react": "1.2.2",
     "@astrojs/tailwind": "2.1.2",
     "@fseehawer/react-circular-slider": "2.5.16",

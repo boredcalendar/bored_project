@@ -2,6 +2,6 @@
 command = "pnpm run build"
 publish = "dist"
 
+# Node version is sourced from .node-version (shared with mise, vp, and CI).
 [build.environment]
-NODE_VERSION = "24"
 PNPM_VERSION = "10.33.2"
