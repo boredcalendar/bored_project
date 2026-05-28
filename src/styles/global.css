@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* Custom design tokens (ported from the old tailwind.config.cjs).
+   In Tailwind 4, theme values are defined in CSS and generate the matching
+   utilities, e.g. --color-bluish-500 -> bg-bluish-500 / text-bluish-500. */
+@theme {
+  --color-bluish-100: #eff6fa;
+  --color-bluish-200: #e0ecf5;
+  --color-bluish-300: #d0e3f0;
+  --color-bluish-400: #c1d9eb;
+  --color-bluish-500: #b1d0e6;
+  --color-bluish-600: #8ea6b8;
+  --color-bluish-700: #6a7d8a;
+  --color-bluish-800: #47535c;
+  --color-bluish-900: #232a2e;
+
+  --color-grayish-100: #fcfdfe;
+  --color-grayish-200: #f9fbfd;
+  --color-grayish-300: #f5fafc;
+  --color-grayish-400: #f2f8fb;
+  --color-grayish-500: #eff6fa;
+  --color-grayish-600: #bfc5c8;
+  --color-grayish-700: #8f9496;
+  --color-grayish-800: #606264;
+  --color-grayish-900: #303132;
+
+  --font-body: "TTNorms", sans-serif;
+}
