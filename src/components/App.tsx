@@ -4,9 +4,7 @@ import * as CircularSliderModule from "@fseehawer/react-circular-slider";
 import { Bullet } from "@nivo/bullet";
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 
-import avatar from "/avatar.svg";
-import celendar from "/celendar.svg";
-// import swipeweek from "/swipeweek.svg"; - пример календаря, удалить после верстки
+// Assets in public/ are referenced by URL, not imported (Astro 3+ astro:assets).
 import "react-calendar/dist/Calendar.css";
 import IndexedDb from "./IndexedDB";
 
@@ -220,11 +218,11 @@ const App: React.FC<{}> = () => {
     <div className="flex flex-col gap-2 p-4 bg-white h-auto max-w-sm">
       <div className="grid grid-cols-3">
         <div className="flex items-center col-start-1 col-end-3">
-          <img src={avatar} />
+          <img src="/avatar.svg" />
           Hello,<span className="font-bold">Aida</span>
         </div>
         <div className="flex items-center justify-end col-start-3 col-end-4">
-          <img src={celendar} />
+          <img src="/celendar.svg" />
         </div>
       </div>
       {!loadingDate && <Calendar onChange={onChange} value={value} />}

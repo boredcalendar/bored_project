@@ -1,4 +1,4 @@
-import { IDBPDatabase, openDB } from "idb";
+import { openDB, type IDBPDatabase } from "idb";
 
 class IndexedDb {
   static getValue(arg0: string, arg1: number): any {
