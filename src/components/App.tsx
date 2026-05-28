@@ -31,8 +31,10 @@ type CircularSliderComponent = React.ComponentType<CircularSliderProps>;
 type CircularSliderExport = CircularSliderComponent | { default: CircularSliderComponent };
 
 const circularSliderExport = CircularSliderModule.default as CircularSliderExport;
+// v3 exports the component (a forwardRef object) directly as `default`; older
+// builds nested it under `default.default`. Unwrap the nested case if present.
 const CircularSlider =
-  typeof circularSliderExport === "function" ? circularSliderExport : circularSliderExport.default;
+  "default" in circularSliderExport ? circularSliderExport.default : circularSliderExport;
 
 const queryClient = new QueryClient();
 
@@ -64,18 +66,20 @@ const App: React.FC<{}> = () => {
   errorDate && console.log(errorDate);
 
   const useTime = () => {
-    return useMutation(async (addTime: number) => {
-      const indexedDb = new IndexedDb("Calendar");
-      await indexedDb.createObjectStore(["Logs"]);
-      const minuts = dataDate || 0;
-      await indexedDb
-        .putValue("Logs", {
-          id: value.setHours(0, 0, 0, 0),
-          date: date,
-          time: +minuts + addTime,
-        })
-        .then(refetch);
-      return;
+    return useMutation({
+      mutationFn: async (addTime: number) => {
+        const indexedDb = new IndexedDb("Calendar");
+        await indexedDb.createObjectStore(["Logs"]);
+        const minuts = dataDate || 0;
+        await indexedDb
+          .putValue("Logs", {
+            id: value.setHours(0, 0, 0, 0),
+            date: date,
+            time: +minuts + addTime,
+          })
+          .then(refetch);
+        return;
+      },
     });
   };
 
@@ -225,14 +229,16 @@ const App: React.FC<{}> = () => {
           <img src="/celendar.svg" />
         </div>
       </div>
-      {!loadingDate && <Calendar onChange={onChange} value={value} />}
+      {!loadingDate && (
+        <Calendar onChange={(v) => v instanceof Date && onChange(v)} value={value} />
+      )}
       {/* <img src={swipeweek} /> - пример календаря, удалить после верстки */}
       {!loadingDate && dataDate && <Statistic />}
       <div>
         <Today />
       </div>
       <div className="flex items-center justify-center">
-        <ButtonTimer onClick={() => queryClient.invalidateQueries(["Logs"])} />
+        <ButtonTimer onClick={() => queryClient.invalidateQueries({ queryKey: ["Logs"] })} />
       </div>
     </div>
   );
