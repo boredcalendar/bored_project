@@ -7,8 +7,7 @@ const ButtonTimer: React.FC<{}> = () => {
   const [click, setClick] = React.useState(true);
   const dataBase = { date: date, time: 0 };
 
-  if (localStorage.length === 0)
-    localStorage.setItem("DataBase", JSON.stringify(dataBase));
+  if (localStorage.length === 0) localStorage.setItem("DataBase", JSON.stringify(dataBase));
   const raw = localStorage.getItem("DataBase");
   const upDateDataBase = JSON.parse(raw!);
   return (

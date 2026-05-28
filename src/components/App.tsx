@@ -2,12 +2,7 @@ import React from "react";
 import Calendar from "react-calendar";
 import * as CircularSliderModule from "@fseehawer/react-circular-slider";
 import { Bullet } from "@nivo/bullet";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-  useQuery,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 
 import avatar from "/avatar.svg";
 import celendar from "/celendar.svg";
@@ -35,24 +30,17 @@ type CircularSliderProps = {
 };
 
 type CircularSliderComponent = React.ComponentType<CircularSliderProps>;
-type CircularSliderExport =
-  | CircularSliderComponent
-  | { default: CircularSliderComponent };
+type CircularSliderExport = CircularSliderComponent | { default: CircularSliderComponent };
 
-const circularSliderExport =
-  CircularSliderModule.default as CircularSliderExport;
+const circularSliderExport = CircularSliderModule.default as CircularSliderExport;
 const CircularSlider =
-  typeof circularSliderExport === "function"
-    ? circularSliderExport
-    : circularSliderExport.default;
+  typeof circularSliderExport === "function" ? circularSliderExport : circularSliderExport.default;
 
 const queryClient = new QueryClient();
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
-  const date = `${value.getDate()}${
-    value.getMonth() + 1
-  }${value.getFullYear()}`;
+  const date = `${value.getDate()}${value.getMonth() + 1}${value.getFullYear()}`;
 
   const {
     isLoading: loadingDate,
@@ -64,19 +52,13 @@ const App: React.FC<{}> = () => {
     queryFn: async () => {
       const indexedDb = new IndexedDb("Calendar");
       await indexedDb.createObjectStore(["Logs"]);
-      const upload = await indexedDb.getValue(
-        "Logs",
-        value.setHours(0, 0, 0, 0)
-      );
+      const upload = await indexedDb.getValue("Logs", value.setHours(0, 0, 0, 0));
       await indexedDb.putValue("Logs", {
         id: value.setHours(0, 0, 0, 0),
         date: date,
         time: upload === undefined ? 0 : upload.time,
       });
-      const localData = await indexedDb.getValue(
-        "Logs",
-        value.setHours(0, 0, 0, 0)
-      );
+      const localData = await indexedDb.getValue("Logs", value.setHours(0, 0, 0, 0));
       return [localData.time];
     },
   });
