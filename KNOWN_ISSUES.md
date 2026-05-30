@@ -1,8 +1,7 @@
 # Known Issues
 
 A tracked backlog of code-quality issues found during the 2026 modernization.
-None are fixed yet — this PR only adds the tooling that surfaces them. Each item
-notes which tool detects it so cleanup can be verified later.
+Each item notes which tool detects it so cleanup can be verified later.
 
 ## Tooling
 
@@ -20,17 +19,13 @@ fixing the issues below first (they would turn into CI failures).
 
 ## Detected by `knip` (dead code / deps)
 
-- **Unused component files** (not imported anywhere; `App.tsx` has its own inline
-  versions): `src/components/Card.astro`, `Today.astro`, `Statistic.astro`,
-  `Today.tsx`, `ButtonTimer.tsx`, `useClientOnly.tsx`.
 - **Unused asset**: `public/fonts/ttnorms/stylesheet.css` (the TTNorms font is
   never wired up — no `@font-face`, and the `font-body` / `--font-body` token is
   unused).
-- **Unused public SVGs** (referenced only by the dead components above):
-  `public/today.svg`, `public/statistic.svg`. _(knip does not scan `public/`
-  assets referenced by URL — found by hand.)_
 - **Redundant direct dependency**: `@nivo/core` — only used as a peer of
   `@nivo/bullet`, never imported directly.
+- **Unlisted binary**: `vp` is used in `package.json` scripts but is provided by
+  the developer environment, not listed as a project dependency.
 - **Unused exported type**: `Props` interface in `src/layouts/Layout.astro`.
 
 ## Detected by `vp run lint` (Oxlint, warnings)
@@ -42,6 +37,8 @@ fixing the issues below first (they would turn into CI failures).
   `errorAll && console.log(...)` side-effect pattern in `App.tsx`.
 - **`jsx-a11y/alt-text`**: two `<img>` tags without `alt` (avatar, calendar) in
   `App.tsx`.
+- **Clickable non-interactive element**: the timer uses a clickable `<div>`
+  without keyboard handling or an interactive role in `App.tsx`.
 
 ## Not detectable by either tool (need human review)
 
