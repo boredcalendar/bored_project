@@ -40,6 +40,9 @@ const queryClient = new QueryClient();
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
+  const dayStart = new Date(value);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayStartTime = dayStart.getTime();
   const date = `${value.getDate()}${value.getMonth() + 1}${value.getFullYear()}`;
 
   const {
@@ -48,22 +51,22 @@ const App: React.FC<{}> = () => {
     data: dataDate,
     refetch,
   } = useQuery({
-    queryKey: [`${value.setHours(0, 0, 0, 0)}`],
+    queryKey: [`${dayStartTime}`],
     queryFn: async () => {
       const indexedDb = new IndexedDb("Calendar");
       await indexedDb.createObjectStore(["Logs"]);
-      const upload = await indexedDb.getValue("Logs", value.setHours(0, 0, 0, 0));
+      const upload = await indexedDb.getValue("Logs", dayStartTime);
       await indexedDb.putValue("Logs", {
-        id: value.setHours(0, 0, 0, 0),
+        id: dayStartTime,
         date: date,
         time: upload === undefined ? 0 : upload.time,
       });
-      const localData = await indexedDb.getValue("Logs", value.setHours(0, 0, 0, 0));
+      const localData = await indexedDb.getValue("Logs", dayStartTime);
       return [localData.time];
     },
   });
 
-  errorDate && console.log(errorDate);
+  if (errorDate) console.log(errorDate);
 
   const useTime = () => {
     return useMutation({
@@ -73,7 +76,7 @@ const App: React.FC<{}> = () => {
         const minuts = dataDate || 0;
         await indexedDb
           .putValue("Logs", {
-            id: value.setHours(0, 0, 0, 0),
+            id: dayStartTime,
             date: date,
             time: +minuts + addTime,
           })
@@ -118,10 +121,12 @@ const App: React.FC<{}> = () => {
               : "bg-grayish-900 absolute z-50 cursor-pointer rounded-full h-28 w-28"
           }
         >
-          <div
-            className="flex flex-col justify-center items-center h-28 w-28"
+          <button
+            type="button"
+            className="flex flex-col justify-center items-center h-28 w-28 cursor-pointer border-0 bg-transparent p-0"
             onMouseDown={() => setClick(false)}
             onMouseUp={() => setClick(true)}
+            onMouseLeave={() => setClick(true)}
             onClick={(e) => {
               e.stopPropagation();
               addTime.mutateAsync(minuts).catch((err) => console.log(err));
@@ -130,7 +135,7 @@ const App: React.FC<{}> = () => {
           >
             <div className="text-white">{minuts}</div>
             <div className="text-white">You Bored?</div>
-          </div>
+          </button>
         </div>
       </>
     );
@@ -167,11 +172,7 @@ const App: React.FC<{}> = () => {
   };
 
   const Statistic = () => {
-    const {
-      isLoading: loadingAll,
-      error: errorAll,
-      data: dataAll,
-    } = useQuery({
+    const { error: errorAll, data: dataAll } = useQuery({
       queryKey: [`logs`],
       queryFn: async () => {
         const indexedDb = new IndexedDb("Calendar");
@@ -181,7 +182,7 @@ const App: React.FC<{}> = () => {
       },
     });
 
-    errorAll && console.log(errorAll);
+    if (errorAll) console.log(errorAll);
 
     const statistics =
       dataAll
@@ -222,11 +223,11 @@ const App: React.FC<{}> = () => {
     <div className="flex flex-col gap-2 p-4 bg-white h-auto max-w-sm">
       <div className="grid grid-cols-3">
         <div className="flex items-center col-start-1 col-end-3">
-          <img src="/avatar.svg" />
+          <img src="/avatar.svg" alt="" />
           Hello,<span className="font-bold">Aida</span>
         </div>
         <div className="flex items-center justify-end col-start-3 col-end-4">
-          <img src="/celendar.svg" />
+          <img src="/celendar.svg" alt="" />
         </div>
       </div>
       {!loadingDate && (
