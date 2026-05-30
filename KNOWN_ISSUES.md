@@ -5,18 +5,17 @@ Each item notes which tool detects it so cleanup can be verified later.
 
 ## Tooling
 
-- **Linting** — `vp run lint` runs Oxlint with `.oxlintrc.json` (enables the
-  `jsx-a11y` and `react` plugins on top of the Vite+ defaults). The blocking
-  `vp check` gate uses Vite+'s bundled Oxlint config and does **not** read
-  `.oxlintrc.json` (Vite+ recommends against it), so these extra rules are
-  surfaced on demand via `vp run lint`, not enforced in CI yet.
+- **Linting** — `vp run lint` runs Oxlint with the Vite+ `lint` config in
+  `vite.config.ts` (enables the `jsx-a11y` and `react` plugins on top of the
+  Vite+ defaults). The rules are warnings for now, so `vp check` surfaces them
+  without turning them into CI failures yet.
 - **Dead code / deps** — `vp run knip` reports unused files, exports, and
-  dependencies (`knip.json` declares `.github/workflows/*.main.ts` as entry
-  files so workflow-generator deps aren't false-flagged, and ignores the
-  externally provided `vp` binary).
+  dependencies (`knip.json` declares `.github/workflows/*.main.ts` and
+  `vite.config.ts` as entry files so tooling-only dependencies aren't
+  false-flagged).
 
-Neither tool is wired into the blocking `vp check` yet: doing so would require
-fixing the issues below first (they would turn into CI failures).
+The lint rules are warnings and Knip is not wired into the blocking `vp check`
+yet. Tightening either gate should happen after fixing the issues below first.
 
 ## Detected by `knip` (dead code / deps)
 

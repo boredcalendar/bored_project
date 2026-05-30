@@ -1,5 +1,4 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": [".github/workflows/*.main.ts"],
-  "ignoreBinaries": ["vp"]
+  "entry": [".github/workflows/*.main.ts", "vite.config.ts"]
 }
