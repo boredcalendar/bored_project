@@ -4,13 +4,13 @@ export default defineConfig({
   lint: {
     plugins: ["react", "react-perf", "jsx-a11y", "import", "typescript", "unicorn", "oxc"],
     categories: {
-      correctness: "warn",
+      correctness: "error",
     },
     rules: {
-      "no-unused-vars": "warn",
-      "jsx-a11y/alt-text": "warn",
-      "react/rules-of-hooks": "warn",
-      "react/exhaustive-deps": "warn",
+      "no-unused-vars": "error",
+      "jsx-a11y/alt-text": "error",
+      "react/rules-of-hooks": "error",
+      "react/exhaustive-deps": "error",
     },
   },
 });
