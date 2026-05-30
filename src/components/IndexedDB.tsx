@@ -1,9 +1,6 @@
 import { openDB, type IDBPDatabase } from "idb";
 
 class IndexedDb {
-  static getValue(arg0: string, arg1: number): any {
-    throw new Error("Method not implemented.");
-  }
   private database: string;
   private db: any;
 
@@ -26,7 +23,7 @@ class IndexedDb {
           }
         },
       });
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -59,8 +56,7 @@ class IndexedDb {
     const tx = this.db.transaction(tableName, "readwrite");
     const store = tx.objectStore(tableName);
     for (const value of values) {
-      const result = await store.put(value);
-      //   console.log("Put Bulk Data ", JSON.stringify(result));
+      await store.put(value);
     }
     return this.getAllValue(tableName);
   }
