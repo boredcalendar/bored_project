@@ -11,8 +11,9 @@ Each item notes which tool detects it so cleanup can be verified later.
   `.oxlintrc.json` (Vite+ recommends against it), so these extra rules are
   surfaced on demand via `vp run lint`, not enforced in CI yet.
 - **Dead code / deps** — `vp run knip` reports unused files, exports, and
-  dependencies (`knip.json` declares `.github/workflows/ci.main.ts` as an entry
-  point so its `yaml` / `@jlarky/gha-ts` deps aren't false-flagged).
+  dependencies (`knip.json` declares `.github/workflows/*.main.ts` as entry
+  files so workflow-generator deps aren't false-flagged, and ignores the
+  externally provided `vp` binary).
 
 Neither tool is wired into the blocking `vp check` yet: doing so would require
 fixing the issues below first (they would turn into CI failures).
@@ -24,8 +25,6 @@ fixing the issues below first (they would turn into CI failures).
   unused).
 - **Redundant direct dependency**: `@nivo/core` — only used as a peer of
   `@nivo/bullet`, never imported directly.
-- **Unlisted binary**: `vp` is used in `package.json` scripts but is provided by
-  the developer environment, not listed as a project dependency.
 - **Unused exported type**: `Props` interface in `src/layouts/Layout.astro`.
 
 ## Detected by `vp run lint` (Oxlint, warnings)
