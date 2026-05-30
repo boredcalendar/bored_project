@@ -1,8 +1,33 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import App from "../../src/components/App";
 ---
 
-<Layout title="Bored Calendar">
-  <App client:only="react" />
+<Layout title="Bored Calendar — reclaim your boredom">
+  <main
+    class="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center gap-8 px-6 py-16 text-center"
+  >
+    <img src="/celendar.svg" alt="" width="64" height="64" class="opacity-80" />
+
+    <div class="flex flex-col gap-3">
+      <h1 class="text-3xl font-bold text-grayish-900">Bored Calendar</h1>
+      <p class="text-lg text-grayish-800">"Sometimes you've just got to be bored."</p>
+    </div>
+
+    <p class="text-balance leading-relaxed text-grayish-800">
+      A quiet little app that gives you permission to be under-stimulated on purpose.
+      Notice a bored moment, sit with it instead of filling it, and appreciate it for
+      what it is.
+    </p>
+
+    <a
+      href="/app"
+      class="rounded-full bg-bluish-500 px-8 py-3 font-bold text-grayish-900 transition-colors hover:bg-bluish-600"
+    >
+      Sit with a bored moment
+    </a>
+
+    <p class="text-sm text-grayish-700">
+      No streaks, no scores. Your moments stay on this device.
+    </p>
+  </main>
 </Layout>

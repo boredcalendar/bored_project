@@ -146,7 +146,7 @@ const App: React.FC<{}> = () => {
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
         <div className="font-bold">Today</div>
-        Time is {timeIsToday} minuts
+        <div>{timeIsToday} minutes of boredom so far.</div>
         <Bullet
           data={[
             {
@@ -197,7 +197,8 @@ const App: React.FC<{}> = () => {
 
     return (
       <div className="px-4 py-4 rounded-2xl bg-grayish-500">
-        <div className="font-bold">Statistic</div>
+        <div className="font-bold">Patterns</div>
+        <div className="text-sm text-grayish-800">A quiet look back — no scores, no streaks.</div>
         <Bullet
           data={statistics}
           margin={{ top: 20, right: 25, bottom: 10, left: 0 }}
@@ -221,19 +222,16 @@ const App: React.FC<{}> = () => {
 
   return (
     <div className="flex flex-col gap-2 p-4 bg-white h-auto max-w-sm">
-      <div className="grid grid-cols-3">
-        <div className="flex items-center col-start-1 col-end-3">
-          <img src="/avatar.svg" alt="" />
-          Hello,<span className="font-bold">Aida</span>
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="font-bold">Your bored moments</div>
+          <div className="text-sm text-grayish-800">Pick a day and sit with it.</div>
         </div>
-        <div className="flex items-center justify-end col-start-3 col-end-4">
-          <img src="/celendar.svg" alt="" />
-        </div>
+        <img src="/celendar.svg" alt="" />
       </div>
       {!loadingDate && (
         <Calendar onChange={(v) => v instanceof Date && onChange(v)} value={value} />
       )}
-      {/* <img src={swipeweek} /> - пример календаря, удалить после верстки */}
       {!loadingDate && dataDate && <Statistic />}
       <div>
         <Today />
