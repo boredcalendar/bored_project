@@ -5,10 +5,10 @@ Each item notes which tool detects it so cleanup can be verified later.
 
 ## Tooling
 
-- **Linting** — `vp run lint` runs Oxlint with the Vite+ `lint` config in
+- **Linting** — `vp check` runs Oxlint with the Vite+ `lint` config in
   `vite.config.ts` (enables the `jsx-a11y` and `react` plugins on top of the
-  Vite+ defaults). The rules are warnings for now, so `vp check` surfaces them
-  without turning them into CI failures yet.
+  Vite+ defaults). The rules are warnings for now, so they surface without
+  turning into CI failures yet.
 - **Dead code / deps** — `vp run knip` reports unused files, exports, and
   dependencies (`knip.json` declares `.github/workflows/*.main.ts` and
   `vite.config.ts` as entry files so tooling-only dependencies aren't
@@ -26,7 +26,7 @@ yet. Tightening either gate should happen after fixing the issues below first.
   `@nivo/bullet`, never imported directly.
 - **Unused exported type**: `Props` interface in `src/layouts/Layout.astro`.
 
-## Detected by `vp run lint` (Oxlint, warnings)
+## Detected by `vp check` (Oxlint, warnings)
 
 - **Unused variables / parameters**: `result`, `loadingAll` (`App.tsx`),
   `arg0` / `arg1` (the dead `getValue` stub in `IndexedDB.tsx`), and an unused

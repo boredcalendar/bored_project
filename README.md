@@ -35,12 +35,11 @@ Node is pinned in `.node-version` (read by mise, vp, and Netlify).
 | `vp run test`  | Run `astro check`                              |
 | `vp run build` | Build the production site to `./dist/`         |
 | `vp preview`   | Preview the production build locally           |
-| `vp run lint`  | Extended Oxlint pass (jsx-a11y + react rules)  |
 | `vp run knip`  | Report unused files, exports, and dependencies |
 
 Prefer plain pnpm? `pnpm install` / `pnpm run dev` work too — `vp` simply wraps them.
 
-See [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) for the backlog `vp run lint` / `vp run knip` currently surface.
+See [KNOWN_ISSUES.md](./KNOWN_ISSUES.md) for the backlog `vp check` / `vp run knip` currently surface.
 
 ## Project structure
 
