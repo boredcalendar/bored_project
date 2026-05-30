@@ -224,7 +224,7 @@ const App: React.FC<{}> = () => {
     <div className="flex flex-col gap-2 p-4 bg-white h-auto max-w-sm">
       <div className="flex items-center justify-between">
         <div>
-          <div className="font-bold">Your bored moments</div>
+          <h1 className="font-bold">Your bored moments</h1>
           <div className="text-sm text-grayish-800">Pick a day and sit with it.</div>
         </div>
         <img src="/celendar.svg" alt="" />
