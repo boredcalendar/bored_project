@@ -26,6 +26,7 @@ const wf = workflow({
         },
         { run: "vp check" },
         { run: "vp run test" },
+        { run: "vp test run" },
         { run: "vp run build" },
       ],
     },
