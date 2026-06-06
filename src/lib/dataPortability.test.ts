@@ -67,6 +67,11 @@ describe("parseExport", () => {
     expect(() => parseExport(text)).toThrow(ImportError);
   });
 
+  it("rejects a smuggled __proto__ key that strict arktype alone would miss", () => {
+    const text = `{"schemaVersion":${SCHEMA_VERSION},"exportedAt":"${exportedAt}","days":[],"__proto__":{"polluted":true}}`;
+    expect(() => parseExport(text)).toThrow(ImportError);
+  });
+
   it("rejects extra keys inside a day entry", () => {
     const text = JSON.stringify({
       schemaVersion: SCHEMA_VERSION,
