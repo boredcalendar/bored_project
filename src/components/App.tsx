@@ -3,6 +3,7 @@ import Calendar from "react-calendar";
 import * as CircularSliderModule from "@fseehawer/react-circular-slider";
 import { Bullet } from "@nivo/bullet";
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
+import { validateStoredLogEntries, validateStoredLogEntry, type LogEntry } from "./logEntry";
 
 // Assets in public/ are referenced by URL, not imported (Astro 3+ astro:assets).
 import "react-calendar/dist/Calendar.css";
@@ -38,13 +39,6 @@ const CircularSlider =
 
 const queryClient = new QueryClient();
 
-type LogEntry = {
-  id: number;
-  date: string;
-  time: number;
-  reflection?: string;
-};
-
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
   const dayStart = new Date(value);
@@ -66,7 +60,10 @@ const App: React.FC<{}> = () => {
     queryFn: async () => {
       const indexedDb = new IndexedDb("Calendar");
       await indexedDb.createObjectStore(["Logs"]);
-      const upload = (await indexedDb.getValue("Logs", dayStartTime)) as LogEntry | undefined;
+      const upload = validateStoredLogEntry(
+        await indexedDb.getValue("Logs", dayStartTime),
+        "Logs.getValue",
+      );
       const localData: LogEntry = {
         id: dayStartTime,
         date: date,
@@ -83,8 +80,7 @@ const App: React.FC<{}> = () => {
     queryFn: async () => {
       const indexedDb = new IndexedDb("Calendar");
       await indexedDb.createObjectStore(["Logs"]);
-      const allDB = (await indexedDb.getAllValue("Logs")) as LogEntry[];
-      return allDB;
+      return validateStoredLogEntries(await indexedDb.getAllValue("Logs"), "Logs.getAllValue");
     },
   });
 
