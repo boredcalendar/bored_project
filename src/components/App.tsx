@@ -4,6 +4,12 @@ import * as CircularSliderModule from "@fseehawer/react-circular-slider";
 import { Bullet } from "@nivo/bullet";
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
 import { validateStoredLogEntries, validateStoredLogEntry, type LogEntry } from "./logEntry";
+import { ImportError, planExport, planImport, serializeExport } from "../lib/dataPortability";
+import {
+  getPersistentStorageStatus,
+  requestPersistentStorage,
+  type PersistentStorageStatus,
+} from "../lib/persistentStorage";
 
 // Assets in public/ are referenced by URL, not imported (Astro 3+ astro:assets).
 import "react-calendar/dist/Calendar.css";
@@ -353,7 +359,159 @@ const App: React.FC<{}> = () => {
         />
       </div>
       {!loadingDate && dataDate && <Statistic />}
+      <DataControls
+        days={dataAll}
+        onImported={async () => {
+          await refetch();
+          await queryClient.invalidateQueries({ queryKey: ["logs"] });
+        }}
+      />
     </div>
+  );
+};
+
+const DataControls: React.FC<{
+  days: LogEntry[] | undefined;
+  onImported: () => Promise<void>;
+}> = ({ days, onImported }) => {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [message, setMessage] = React.useState<{ tone: "ok" | "error"; text: string } | undefined>(
+    undefined,
+  );
+  const [storageStatus, setStorageStatus] = React.useState<PersistentStorageStatus>("unsupported");
+
+  React.useEffect(() => {
+    let active = true;
+    getPersistentStorageStatus()
+      .then((status) => active && setStorageStatus(status))
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleExport = () => {
+    // Refuse to export when the store hasn't loaded, so a failed read can't be
+    // saved as a misleading empty backup.
+    const plan = planExport(days);
+    if (!plan.ok) {
+      setMessage({ tone: "error", text: plan.reason });
+      return;
+    }
+    const now = new Date();
+    const json = serializeExport(plan.days, now.toISOString());
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `bored-calendar-${now.toISOString().slice(0, 10)}.json`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    // Defer revocation so the download has begun across browsers.
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+    setMessage({ tone: "ok", text: `Exported ${plan.days.length} day(s).` });
+  };
+
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    // Reset so importing the same file twice still fires onChange.
+    event.target.value = "";
+    if (!file) {
+      return;
+    }
+    try {
+      const indexedDb = new IndexedDb("Calendar");
+      await indexedDb.createObjectStore(["Logs"]);
+      // Validate the file and merge it with existing days before any write, so a
+      // bad import never mutates storage and never deletes days absent from the
+      // file (merge is an upsert; imported days win on id collision).
+      const { merged, imported } = planImport(
+        await indexedDb.getAllValue("Logs"),
+        await file.text(),
+      );
+      await indexedDb.putBulkValue("Logs", merged);
+      await onImported();
+      setMessage({ tone: "ok", text: `Imported ${imported.length} day(s).` });
+    } catch (error) {
+      const text =
+        error instanceof ImportError
+          ? error.message
+          : "Something went wrong reading that file, so nothing was changed.";
+      setMessage({ tone: "error", text });
+    }
+  };
+
+  const handlePersist = async () => {
+    setStorageStatus(await requestPersistentStorage());
+  };
+
+  const storageLabel: Record<PersistentStorageStatus, string> = {
+    granted: "On — this browser has agreed to keep your data.",
+    denied: "Not yet granted — your browser may clear data under storage pressure.",
+    unsupported: "Not available in this browser.",
+  };
+
+  return (
+    <details className="rounded-2xl bg-grayish-500 px-4 py-4">
+      <summary className="cursor-pointer font-bold">Backup &amp; restore</summary>
+      <div className="text-sm text-grayish-800">
+        Your days live only on this device. Export a copy to keep them safe, or import a copy onto
+        another device. No account needed.
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button
+          type="button"
+          className="rounded-2xl border border-bluish-500 bg-white px-3 py-2 text-sm font-bold text-grayish-900"
+          onClick={handleExport}
+        >
+          Export JSON
+        </button>
+        <button
+          type="button"
+          className="rounded-2xl border border-bluish-500 bg-white px-3 py-2 text-sm font-bold text-grayish-900"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          Import JSON
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          aria-label="Import a Bored Calendar JSON export"
+          onChange={(event) => {
+            handleImport(event).catch(() => undefined);
+          }}
+        />
+      </div>
+      {message && (
+        <output
+          className={
+            message.tone === "ok"
+              ? "mt-3 block rounded-xl bg-white p-3 text-sm text-grayish-900"
+              : "mt-3 block rounded-xl bg-white p-3 text-sm text-red-700"
+          }
+        >
+          {message.text}
+        </output>
+      )}
+      <div className="mt-4 border-t border-grayish-600 pt-3">
+        <div className="text-sm font-bold text-grayish-900">Persistent storage</div>
+        <div className="text-sm text-grayish-800">{storageLabel[storageStatus]}</div>
+        {storageStatus !== "granted" && storageStatus !== "unsupported" && (
+          <button
+            type="button"
+            className="mt-2 rounded-2xl border border-bluish-500 bg-white px-3 py-2 text-sm font-bold text-grayish-900"
+            onClick={() => {
+              handlePersist().catch(() => undefined);
+            }}
+          >
+            Keep my data on this device
+          </button>
+        )}
+      </div>
+    </details>
   );
 };
 

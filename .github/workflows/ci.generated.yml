@@ -23,4 +23,5 @@ jobs:
           git diff --exit-code .github/workflows/
       - run: vp check
       - run: vp run test
+      - run: vp test run
       - run: vp run build
