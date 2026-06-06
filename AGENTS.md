@@ -37,3 +37,7 @@ The core benefit is space for reflection, creativity, emotional processing, and 
 ## Current Prototype Context
 
 This project started as a learning project by a beginner developer. Expect rough edges, unfinished UI, and old dependencies. Preserve the playful concept while improving quality incrementally.
+
+## Local Preview
+
+- See [docs/local-preview.md](docs/local-preview.md) for running a phone-ready preview with Portless and Tailscale, including the Vite `allowedHosts` gotcha.
