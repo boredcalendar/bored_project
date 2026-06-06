@@ -38,6 +38,9 @@ const CircularSlider =
   "default" in circularSliderExport ? circularSliderExport.default : circularSliderExport;
 
 const queryClient = new QueryClient();
+const maxDialMinutes = 20;
+const circularSliderMax = maxDialMinutes + 1;
+const maxDailyMinutes = 240;
 
 const App: React.FC<{}> = () => {
   const [value, onChange] = React.useState(new Date());
@@ -138,6 +141,12 @@ const App: React.FC<{}> = () => {
     const hasChanges = minutes !== savedMinutes || currentReflection !== savedReflection;
     const canSave = hasChanges;
     const buttonText = hasSavedDay ? "Update day" : "Save day";
+    const statusText = canSave
+      ? `${minutes} minutes, unsaved changes.`
+      : `${minutes} minutes saved for this day.`;
+    const addTenMinutes = () => {
+      setMinutes((currentMinutes) => Math.min(currentMinutes + 10, maxDailyMinutes));
+    };
 
     return (
       <div className="flex flex-col gap-3 rounded-2xl bg-bluish-100 px-4 py-4">
@@ -148,56 +157,75 @@ const App: React.FC<{}> = () => {
           </div>
         </div>
         <div className="relative flex items-center justify-center py-2">
-          <CircularSlider
-            width={165}
-            min={0}
-            max={15}
-            valueFontSize="2rem"
-            label="minutes"
-            labelColor="#FFFFFF"
-            labelBottom={true}
-            labelFontSize="1rem"
-            knobColor="#1C1C1E"
-            progressColorFrom="#B1D0E6"
-            progressColorTo="#9CA3AF"
-            progressSize={16}
-            trackSize={16}
-            trackColor="#F9FAFB"
-            dataIndex={minutes}
-            onChange={(value) => {
-              setMinutes(value);
-            }}
-          />
-          <div
-            className={
-              canSave && click
-                ? "bg-bluish-500 absolute z-50 cursor-pointer rounded-full h-28 w-28"
-                : "bg-grayish-600 absolute z-50 cursor-pointer rounded-full h-28 w-28"
-            }
-          >
+          <div className="relative z-0 flex items-center justify-center">
+            <CircularSlider
+              width={165}
+              min={0}
+              max={circularSliderMax}
+              valueFontSize="2rem"
+              label="minutes"
+              labelColor="#FFFFFF"
+              labelBottom={true}
+              labelFontSize="1rem"
+              knobColor="#1C1C1E"
+              progressColorFrom="#B1D0E6"
+              progressColorTo="#9CA3AF"
+              progressSize={16}
+              trackSize={16}
+              trackColor="#F9FAFB"
+              dataIndex={Math.min(minutes, maxDialMinutes)}
+              onChange={(value) => {
+                setMinutes(value);
+              }}
+            />
+            <div
+              className={
+                canSave && click
+                  ? "bg-bluish-500 absolute z-10 cursor-pointer rounded-full h-28 w-28"
+                  : "bg-grayish-600 absolute z-10 cursor-pointer rounded-full h-28 w-28"
+              }
+            >
+              <button
+                type="button"
+                className="flex flex-col justify-center items-center h-28 w-28 cursor-pointer border-0 bg-transparent p-0 disabled:cursor-default"
+                disabled={!canSave}
+                onMouseDown={() => canSave && setClick(false)}
+                onMouseUp={() => setClick(true)}
+                onMouseLeave={() => setClick(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!canSave) {
+                    return;
+                  }
+                  logEntry.mutateAsync({ minutes, reflection }).catch((err) => console.log(err));
+                }}
+              >
+                <div className="text-white">{minutes}</div>
+                <div className="text-center text-sm text-white">{buttonText}</div>
+              </button>
+            </div>
+          </div>
+          <div className="absolute right-0 top-4 flex w-14 flex-col items-stretch gap-20">
             <button
               type="button"
-              className="flex flex-col justify-center items-center h-28 w-28 cursor-pointer border-0 bg-transparent p-0 disabled:cursor-default"
-              disabled={!canSave}
-              onMouseDown={() => canSave && setClick(false)}
-              onMouseUp={() => setClick(true)}
-              onMouseLeave={() => setClick(true)}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!canSave) {
-                  return;
-                }
-                logEntry.mutateAsync({ minutes, reflection }).catch((err) => console.log(err));
+              className="rounded-2xl border border-bluish-500 bg-white px-1.5 py-2 text-sm font-bold text-grayish-900 disabled:cursor-default disabled:border-grayish-600 disabled:text-grayish-800"
+              disabled={minutes >= maxDailyMinutes}
+              onClick={() => {
+                addTenMinutes();
               }}
             >
-              <div className="text-white">{minutes}</div>
-              <div className="text-center text-sm text-white">{buttonText}</div>
+              +10
+            </button>
+            <button
+              type="button"
+              className="rounded-full px-1 py-0.5 text-xs font-bold text-grayish-800 underline decoration-grayish-700 underline-offset-2"
+              onClick={() => setMinutes(0)}
+            >
+              Clear
             </button>
           </div>
         </div>
-        <div className="text-center text-sm text-grayish-800">
-          {canSave ? "You have unsaved changes for this day." : "No changes to save."}
-        </div>
+        <div className="text-center text-sm text-grayish-800">{statusText}</div>
         <label htmlFor="bored-reflection" className="flex flex-col gap-2 text-sm text-grayish-900">
           Note for this day <span className="text-grayish-800">Optional</span>
           <textarea
