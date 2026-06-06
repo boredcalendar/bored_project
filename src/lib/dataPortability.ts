@@ -13,7 +13,7 @@ export const MAX_DAILY_MINUTES = 240;
 // wrote ourselves: ids must be non-negative integer day-keys and times must be
 // whole minutes within the range the app can actually display. This is the gate
 // that makes "validate before write" meaningful for hand-edited files.
-const ImportDay = arktype({
+export const ImportDay = arktype({
   id: "number.integer >= 0",
   date: "string",
   time: `0 <= number.integer <= ${MAX_DAILY_MINUTES}`,
@@ -40,6 +40,34 @@ export class ImportError extends Error {
   }
 }
 
+/**
+ * Parse JSON from an untrusted file while refusing `__proto__` keys.
+ * `JSON.parse` materializes a literal `"__proto__"` key as a real own property
+ * that arktype's strict `"+": "reject"` does NOT catch, so without this an
+ * attacker-crafted file could smuggle an extra key (or pollute objects derived
+ * from the result). The reviver runs for every nested key, so this guards the
+ * whole tree. Throws `ImportError` (never a raw `SyntaxError`).
+ */
+export function safeJsonParse(text: string): unknown {
+  try {
+    return JSON.parse(text, (key, value) => {
+      if (key === "__proto__") {
+        throw new ImportError(
+          "This file isn't valid JSON. Please choose a Bored Calendar export file.",
+        );
+      }
+      return value;
+    });
+  } catch (error) {
+    if (error instanceof ImportError) {
+      throw error;
+    }
+    throw new ImportError(
+      "This file isn't valid JSON. Please choose a Bored Calendar export file.",
+    );
+  }
+}
+
 export function buildExport(days: LogEntry[], exportedAt: string): BoredExport {
   return { schemaVersion: SCHEMA_VERSION, exportedAt, days };
 }
@@ -55,14 +83,7 @@ export function serializeExport(days: LogEntry[], exportedAt: string): string {
  * callers never write partial/corrupt data to storage.
  */
 export function parseExport(text: string): BoredExport {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    throw new ImportError(
-      "This file isn't valid JSON. Please choose a Bored Calendar export file.",
-    );
-  }
+  const parsed = safeJsonParse(text);
 
   // Detect a recognizable-but-newer export before strict validation so we can
   // explain the version mismatch instead of dumping a shape error.

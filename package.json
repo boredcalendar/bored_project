@@ -23,6 +23,7 @@
     "arktype": "2.2.0",
     "astro": "6.4.2",
     "idb": "8.0.3",
+    "jazz-tools": "2.0.0-alpha.50",
     "react": "19.2.6",
     "react-calendar": "6.0.1",
     "react-dom": "19.2.6",
