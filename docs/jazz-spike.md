@@ -1,13 +1,24 @@
 # Jazz spike — local-first multi-device sync (issue #22)
 
-Status: **spike / design + model layer.** This document plus `src/lib/sync/jazzSync.ts`
-(and its tests) are the deliverable. We deliberately did **not** add the
-`jazz-tools` runtime dependency or wire sync into the app yet — issue #21 keeps
-the free experience local-only, and a spike should let us decide _before_ taking
-on a sync engine. What we _have_ built is the part that a Jazz integration forces
-us to get right regardless of timing: the identity/secret model and the
-import/restore semantics, expressed as pure, tested code so the product
-decisions are concrete and reviewable.
+Status: **spike / running proof-of-concept.** The deliverable is three things:
+
+1. **A real, runtime Jazz integration** — `src/components/JazzPoc.tsx` +
+   `src/lib/jazz/schema.ts`, mounted on a dedicated `/jazz-poc` route
+   (`client:only`). It declares a Jazz v2 relational schema, reads/writes a synced
+   `boredDays` table, and exposes device-key backup/restore via Jazz's local-first
+   auth. This is what proves the engine actually works against the live sync server.
+2. **The export/restore + identity-sensitivity model** — `src/lib/sync/jazzSync.ts`
+   (pure, dependency-free, fully tested): how identity/secret material rides along
+   with a JSON export and what "restore this device" vs "add a new device" vs
+   "import data only" mean. This is the product layer we would build _on top of_ the
+   raw engine.
+3. **This decision doc** — the recommendation, the cost/maturity analysis, and the
+   verification findings (including a hard environment blocker, below).
+
+The `/jazz-poc` route is isolated: the main app (issue #21) stays local-only and
+account-free. Sync config comes from `PUBLIC_`-prefixed env vars; with no config
+the page renders setup instructions instead of crashing, so CI (which has no
+secrets) stays green.
 
 ## TL;DR recommendation
 
@@ -44,21 +55,37 @@ Modeling each device as its own Account that is a _member_ of the user's Group
 one device never compromises the others — we can revoke a single device's
 membership. This is the model the spike code encodes.
 
-> **Sketch of the CoValue schema (not yet wired in):**
+> **The actual v2 schema we shipped in the PoC** (`src/lib/jazz/schema.ts`):
 >
 > ```ts
-> const BoredDay = co.map({
->   id: z.number(),
->   date: z.string(),
->   time: z.number(),
->   reflection: z.string().optional(),
-> });
-> const BoredLog = co.record(z.string(), BoredDay); // keyed by day id
-> // BoredLog is owned by the user's Group; each device Account is a member.
+> import { schema as s } from "jazz-tools";
+> const appSchema = {
+>   boredDays: s.table({
+>     dayKey: s.int(), // local-midnight epoch ms — our logical day key
+>     date: s.string(),
+>     minutes: s.int(),
+>     reflection: s.string().optional(),
+>   }),
+> };
+> export const app = s.defineApp(appSchema);
 > ```
 >
-> Shapes mirror the issue #21 `ImportDay` schema so an export and a CoValue are
-> the same data.
+> Shapes mirror the issue #21 `ImportDay` schema so an export and a synced row are
+> the same data. Jazz owns its own string row `id`; our `dayKey` is what we upsert
+> by, exactly as IndexedDB keys by it today.
+
+> **API note — Jazz v2 alpha is a relational redesign.** The Group/Account/CoValue
+> primitives in the table above are the _classic_ Jazz mental model and the
+> longer-term permission story. The installed v2 alpha (`jazz-tools@2.0.0-alpha.50`)
+> instead exposes a **relational** API: `s.table(...)`, `db.insert/update/all`, and a
+> single per-device **local-first auth secret** (`useLocalFirstAuth().secret`) rather
+> than an explicit Account-per-device / Group-membership split. The PoC proves the
+> `deviceSecret` half of the mapping for real (the local seed _is_ the device's key,
+> `login()` restores it, `signOut()` forgets it). The richer multi-device
+> Group-authorization model in `jazzSync.ts` is therefore **design-ahead of the
+> alpha API** — it stays valid as the product target, but the exact v2 primitives for
+> multi-device authorization were still in flux at spike time and need re-confirming
+> against a later release.
 
 ## What this spike actually implements
 
@@ -106,8 +133,8 @@ Concretely in the UI:
 that is precisely Jazz's model: a local replica is the source of truth and sync
 is a background concern. The app stays usable offline and without an account; sync
 is additive. This preserves the issue #21 / #22 non-goal of not requiring accounts
-to use the app. _(Needs a live run to confirm the offline-then-reconnect replay
-behaves as documented — see "Not yet verified".)_
+to use the app. _(Needs a live run on a supported architecture to confirm the
+offline-then-reconnect replay behaves as documented — see "Verification" below.)_
 
 **Can we safely include identity/secret material in exports, or should
 secret-bearing exports require passphrase encryption?** A `secret-bearing` export
@@ -178,22 +205,54 @@ part of why Jazz is a low-risk bet.
 
 Start on Jazz Cloud; keep self-hosting as a known, low-friction exit.
 
-## Not yet verified (needs a live run before shipping sync)
+## Verification — what we ran, and a hard environment blocker
 
-The acceptance criteria below require the actual `jazz-tools` runtime and are the
-remaining work for a follow-up PR that adds the dependency behind a flag:
+**Verified (build + type + model):**
 
-- [ ] PoC: model the daily log as CoValues and run the app against a local Jazz replica.
-- [ ] Two browser profiles syncing the same log through Jazz Cloud (or a local server).
+- [x] The PoC compiles and type-checks against the real `jazz-tools` v2 types
+      (`vp run test` → 0 errors) — the `schema`/`db`/`useAll`/`useLocalFirstAuth`
+      API is used correctly, not mocked.
+- [x] `vp run build` produces a static site including `/jazz-poc`; the client
+      bundle builds with the Jazz WASM runtime.
+- [x] In the browser, the page loads and **every** Jazz asset is fetched
+      successfully, including `jazz_wasm_bg.wasm` (HTTP 200) and the sync client.
+- [x] The export format, strict validation, sensitivity classification, all three
+      restore-mode semantics (incl. error cases), v1 detection, and the
+      migration-away path — all covered by `src/lib/sync/jazzSync.test.ts`.
+
+**Blocked on this machine (linux-arm64) — a real alpha-maturity finding:**
+
+Jazz v2 alpha does not run end-to-end on `linux-arm64`, which is this VM's
+architecture. Two distinct gaps:
+
+1. **No Node native binding for `linux-arm64`.** The optional `jazz-napi` package
+   ships prebuilt binaries only for `darwin-{arm64,x64}`, `linux-x64-gnu`, and
+   `win32-x64-msvc` — there is **no `linux-arm64` binary**. So the Vite/dev
+   schema-registration tooling logs `[jazz] initialization failed: Cannot find
+native binding` on every `astro` invocation. Builds still complete (the browser
+   path uses WASM, not napi), but the Node-side admin tooling can't run here.
+2. **The browser WASM runtime hangs the page on arm64.** After `jazz_wasm_bg.wasm`
+   loads (confirmed 200), the renderer's main thread stops responding on
+   `/jazz-poc` — CDP `Runtime.evaluate`, `DOM.enable`, and screenshots all time
+   out, while the non-Jazz `/app` route in the same browser stays fully responsive.
+   The page never gets past Jazz runtime init.
+
+The net effect: the multi-device + offline acceptance criteria below could **not**
+be exercised in this environment. They are not code defects in the PoC (which
+type-checks, builds, and loads all assets) but a `jazz-tools@2.0.0-alpha.50` ×
+`linux-arm64` support gap. **Re-run the live validation on `darwin-arm64` or
+`linux-x64`** (both have native bindings and are the maintainers' tested targets):
+
+- [ ] Two browser profiles syncing the same log through the Jazz sync server.
 - [ ] Offline edit → reconnect → replay behaves as expected.
 - [ ] Observe real same-day conflict resolution (confirm LWW in practice).
-- [ ] Wire `applyRestore` output into real Account/Group provisioning + the
-      group-authorization handshake for _add-new-device_.
+- [ ] Confirm the v2 multi-device authorization primitives, then wire
+      `applyRestore` output into real provisioning (see the API note above).
 
-What _is_ verified here: the export format, strict validation, sensitivity
-classification, all three restore-mode semantics (including the error cases), v1
-detection, and the migration-away path — all covered by
-`src/lib/sync/jazzSync.test.ts`.
+This blocker **reinforces** the TL;DR recommendation: treat v2 as alpha, gate sync
+behind an opt-in flag, pin the version, and keep the issue #21 local-only floor as
+the always-available path. A sync engine that doesn't yet run on one of our
+developer architectures is not one to make load-bearing today.
 
 ## Relationship to issue #21
 
