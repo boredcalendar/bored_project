@@ -25,6 +25,3 @@ const appSchema = {
 type AppSchema = s.Schema<typeof appSchema>;
 
 export const app: s.App<AppSchema> = s.defineApp(appSchema);
-
-/** A stored boredom-day row, including Jazz's own `id`. */
-export type BoredDayRow = s.RowOf<typeof app.boredDays>;

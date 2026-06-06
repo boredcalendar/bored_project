@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { JazzProvider, useAll, useDb, useLocalFirstAuth, useSession } from "jazz-tools/react";
-import { app, type BoredDayRow } from "../lib/jazz/schema";
+import { app } from "../lib/jazz/schema";
 
 /**
  * Jazz v2 sync proof-of-concept (issue #22, Option A).
@@ -53,9 +53,8 @@ function SyncStatus() {
 }
 
 function DeviceKey() {
-  const { secret, signOut } = useLocalFirstAuth();
+  const { secret, login, signOut } = useLocalFirstAuth();
   const [restoreInput, setRestoreInput] = useState("");
-  const { login } = useLocalFirstAuth();
   const [revealed, setRevealed] = useState(false);
 
   return (
@@ -115,7 +114,8 @@ function DeviceKey() {
 
 function Days() {
   const db = useDb();
-  const days = useAll(app.boredDays) as BoredDayRow[] | undefined;
+  // useAll is typed from the table's row type, so `days` is BoredDayRow[] | undefined.
+  const days = useAll(app.boredDays);
   const [minutes, setMinutes] = useState(15);
 
   async function logToday() {
@@ -145,7 +145,7 @@ function Days() {
           aria-label="Minutes spent bored today"
           className="w-24 rounded border p-2"
           value={minutes}
-          onChange={(e) => setMinutes(Number(e.target.value))}
+          onChange={(e) => setMinutes(Number(e.target.value) || 0)}
         />
         <button
           type="button"
@@ -190,6 +190,9 @@ function Inner() {
 }
 
 export default function JazzPoc() {
+  // Exactly one hook above the guards below. APP_ID/SERVER_URL are module
+  // constants, so hook order is stable per mount — keep any new hooks above the
+  // early returns to preserve that.
   const { secret, isLoading } = useLocalFirstAuth();
 
   if (!APP_ID || !SERVER_URL) {

@@ -70,9 +70,13 @@ membership. This is the model the spike code encodes.
 > export const app = s.defineApp(appSchema);
 > ```
 >
-> Shapes mirror the issue #21 `ImportDay` schema so an export and a synced row are
-> the same data. Jazz owns its own string row `id`; our `dayKey` is what we upsert
-> by, exactly as IndexedDB keys by it today.
+> Shapes are analogous to the issue #21 `ImportDay` / local `LogEntry` so an export
+> and a synced row carry the same information, with a deliberate field mapping: the
+> local `id` (day key) becomes `dayKey` (Jazz owns its own string row `id`, which is
+> what we upsert by — exactly as IndexedDB keys by `id` today), and local `time`
+> becomes `minutes`. Note `reflection` is `string | null` here (Jazz `.optional()`)
+> vs `string | undefined` locally — a small normalization the real export/import
+> adapter would handle.
 
 > **API note — Jazz v2 alpha is a relational redesign.** The Group/Account/CoValue
 > primitives in the table above are the _classic_ Jazz mental model and the
@@ -210,15 +214,16 @@ Start on Jazz Cloud; keep self-hosting as a known, low-friction exit.
 **Verified (build + type + model):**
 
 - [x] The PoC compiles and type-checks against the real `jazz-tools` v2 types
-      (`vp run test` → 0 errors) — the `schema`/`db`/`useAll`/`useLocalFirstAuth`
-      API is used correctly, not mocked.
+      (`vp run test`, which runs `astro check` → 0 errors) — the
+      `schema`/`db`/`useAll`/`useLocalFirstAuth` API is used correctly, not mocked.
 - [x] `vp run build` produces a static site including `/jazz-poc`; the client
       bundle builds with the Jazz WASM runtime.
 - [x] In the browser, the page loads and **every** Jazz asset is fetched
       successfully, including `jazz_wasm_bg.wasm` (HTTP 200) and the sync client.
-- [x] The export format, strict validation, sensitivity classification, all three
-      restore-mode semantics (incl. error cases), v1 detection, and the
-      migration-away path — all covered by `src/lib/sync/jazzSync.test.ts`.
+- [x] The export/restore model — export format, strict validation, sensitivity
+      classification, all three restore-mode semantics (incl. error cases), v1
+      detection, and the migration-away path — is covered by
+      `src/lib/sync/jazzSync.test.ts`, run separately under vitest (`vp test run`).
 
 **Blocked on this machine (linux-arm64) — a real alpha-maturity finding:**
 
