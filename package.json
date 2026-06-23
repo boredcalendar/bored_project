@@ -13,7 +13,7 @@
     "knip": "knip"
   },
   "dependencies": {
-    "@astrojs/react": "5.0.6",
+    "@astrojs/react": "6.0.0",
     "@fseehawer/react-circular-slider": "3.3.3",
     "@nivo/bullet": "0.99.0",
     "@tailwindcss/vite": "4.3.0",
@@ -21,7 +21,7 @@
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "arktype": "2.2.0",
-    "astro": "6.4.2",
+    "astro": "7.0.2",
     "idb": "8.0.3",
     "react": "19.2.6",
     "react-calendar": "6.0.1",
