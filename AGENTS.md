@@ -40,4 +40,6 @@ This project started as a learning project by a beginner developer. Expect rough
 
 ## Local Preview
 
+- For a plain local dev server, use `vp run dev`. Astro 7 may run the dev server in the background for agents; use `vp run astro dev status`, `vp run astro dev logs`, and `vp run astro dev stop` to inspect or stop it.
 - See [docs/local-preview.md](docs/local-preview.md) for running a phone-ready preview with Portless and Tailscale, including the Vite `allowedHosts` gotcha.
+- See [docs/e2e-testing.md](docs/e2e-testing.md) for project-specific `agent-browser` smoke testing notes.

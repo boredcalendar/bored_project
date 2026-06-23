@@ -174,8 +174,13 @@ const App: React.FC<{}> = () => {
               trackSize={16}
               trackColor="#F9FAFB"
               dataIndex={Math.min(minutes, maxDialMinutes)}
-              onChange={(value) => {
-                setMinutes(value);
+              onChange={(nextMinutes) => {
+                setMinutes((currentMinutes) => {
+                  if (currentMinutes > maxDialMinutes && nextMinutes === maxDialMinutes) {
+                    return currentMinutes;
+                  }
+                  return nextMinutes;
+                });
               }}
             />
             <div
