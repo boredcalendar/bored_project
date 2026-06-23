@@ -13,11 +13,11 @@ agent-browser close --all || true
 Start or verify the Astro dev server:
 
 ```sh
-vp run dev
+vp run dev --background
 vp run astro dev status
 ```
 
-Astro 7 may keep the dev server running in the background. Stop it with:
+Astro 7 keeps this dev server running in the background. Stop it with:
 
 ```sh
 vp run astro dev stop
